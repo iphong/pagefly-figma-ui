@@ -1,0 +1,7 @@
+{
+	"name": "PageFly UI Generator",
+	"id": "791238209201487624",
+	"api": "1.0.0",
+	"main": "dist/core.js",
+	"ui": "dist/app.html"
+}
