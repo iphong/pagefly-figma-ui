@@ -1,32 +1,19 @@
-import React from 'react'
-import styled, { createGlobalStyle } from 'styled-components'
-import { Provider, Subscribe } from 'unstated'
-import { store } from '../lib/store'
-import { Home } from './Home'
-import { Create } from './Create'
-
+import React from 'react';
+import styled, { createGlobalStyle } from 'styled-components';
+import { Provider, Subscribe } from 'unstated';
+import { store } from '../lib/store';
+import { Home } from './Home';
+import { Create } from './Create';
 const views = {
-	HOME: Home,
-	CREATE: Create
-}
-
-const placeholder = <div>{`View "${store.state.view}" not found!`}</div>
-
-export const Layout = () => (
-	<>
-		<GlobalStyled/>
-		<Provider>
-			<Subscribe to={[store]}>
-				{() => (
-					<WrapperStyled className={store.isLoading ? 'loading' : ''}>
-						{React.createElement(views[store.state.view] || placeholder)}
-					</WrapperStyled>
-				)}
-			</Subscribe>
-		</Provider>
-	</>
-)
-const GlobalStyled = createGlobalStyle`
+    HOME: Home,
+    CREATE: Create
+};
+const placeholder = React.createElement("div", null, `View "${store.state.view}" not found!`);
+export const Layout = () => (React.createElement(React.Fragment, null,
+    React.createElement(GlobalStyled, null),
+    React.createElement(Provider, null,
+        React.createElement(Subscribe, { to: [store] }, () => (React.createElement(WrapperStyled, { className: store.isLoading ? 'loading' : '' }, React.createElement(views[store.state.view] || placeholder)))))));
+const GlobalStyled = createGlobalStyle `
 	body {
 		padding: 0;
 		margin: 0;
@@ -34,8 +21,8 @@ const GlobalStyled = createGlobalStyle`
 		font-size: 13px;
 		font-family: "Helvetica Neue", serif;
 	}
-`
-const WrapperStyled = styled.div`
+`;
+const WrapperStyled = styled.div `
 	
 	padding-bottom: 45px;
 	
@@ -106,4 +93,4 @@ const WrapperStyled = styled.div`
 			margin-left: 5px;
 		}
 	}
-`
+`;

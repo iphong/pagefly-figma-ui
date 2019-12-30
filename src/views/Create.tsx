@@ -1,10 +1,10 @@
 import React, { useState } from 'react'
-import { app } from '../store/app'
+import { store } from '../lib/store'
 
 export const Create = () => {
-	const [url, change] = useState(app.state.page.url)
-	const goHome = () => app.navigate('HOME')
-	const create = () => app.generate(url).then(goHome)
+	const [url, change] = useState(store.state.page.url)
+	const goHome = () => store.navigate('HOME')
+	const create = () => store.generate(url).then(goHome)
 	return (
 		<main>
 			<section>

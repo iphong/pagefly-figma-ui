@@ -1,10 +1,10 @@
 import { Container } from 'unstated'
-import { emit, listen } from '../lib/events'
-import { FigmaAPI, GoogleAPI } from '../lib/api'
+import { emit, listen } from './events'
+import { FigmaAPI, GoogleAPI } from './api'
 
 window.emit = emit
 
-export interface IAppStore {
+export interface IStore {
 	view:string
 	page:{url?:string, items:any[]}
 	selection:Array<{[key:string]:any}>
@@ -15,7 +15,7 @@ export interface IAppStore {
 	figma_styles?:{[key:string]:{key:string, name:string, description:string, fillType:string}},
 }
 
-export class AppStore extends Container<IAppStore> {
+export class Store extends Container<IStore> {
 	state = {
 		view: 'HOME',
 		page: { url: '', title: '', items: [] },
@@ -112,6 +112,4 @@ export class AppStore extends Container<IAppStore> {
 }
 
 
-export const app:AppStore = new AppStore
-
-window.app = app
+export const store:Store = new Store

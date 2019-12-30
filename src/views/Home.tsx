@@ -1,15 +1,15 @@
 import React, { useState } from 'react'
 import styled from 'styled-components'
-import { app } from '../store/app'
+import { store } from '../lib/store'
 import { emit } from '../lib/events'
 
 export const Home = () => {
-	const page = app.state.page
-	const selection = app.state.selection
+	const page = store.state.page
+	const selection = store.state.selection
 
 	let changedURL = page.url
 
-	const handleUpdate = () => app.generate(changedURL)
+	const handleUpdate = () => store.generate(changedURL)
 
 	const Field = ({ field, header }) => {
 		const [val, setVal] = useState(field.value)

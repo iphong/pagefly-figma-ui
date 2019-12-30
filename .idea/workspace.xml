@@ -25,19 +25,60 @@
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
-    <option name="showExcludedFiles" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent">
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../tools" />
     <property name="node.js.detected.package.eslint" value="true" />
+    <property name="node.js.detected.package.stylelint" value="true" />
     <property name="node.js.path.for.package.eslint" value="project" />
+    <property name="node.js.path.for.package.stylelint" value="project" />
     <property name="node.js.selected.package.eslint" value="(autodetect)" />
+    <property name="node.js.selected.package.stylelint" value="" />
     <property name="nodejs_package_manager_path" value="npm" />
     <property name="prettierjs.PrettierConfiguration.Package" value="/usr/local/lib/node_modules/prettier" />
-    <property name="settings.editor.selected.configurable" value="preferences.pluginManager" />
+    <property name="settings.editor.selected.configurable" value="settings.typescriptcompiler" />
+    <property name="ts.external.directory.path" value="$PROJECT_DIR$/node_modules/typescript/lib" />
+  </component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/../tools" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src" />
+      <recent name="$PROJECT_DIR$" />
+      <recent name="$PROJECT_DIR$/src/lib" />
+    </key>
+  </component>
+  <component name="RunManager">
+    <configuration name="build" type="js.build_tools.npm" temporary="true" nameIsGenerated="true">
+      <package-json value="$PROJECT_DIR$/package.json" />
+      <command value="run" />
+      <scripts>
+        <script value="build" />
+      </scripts>
+      <node-interpreter value="project" />
+      <envs />
+      <method v="2" />
+    </configuration>
+    <configuration name="start" type="js.build_tools.npm" temporary="true" nameIsGenerated="true">
+      <package-json value="$PROJECT_DIR$/package.json" />
+      <command value="run" />
+      <scripts>
+        <script value="start" />
+      </scripts>
+      <node-interpreter value="project" />
+      <envs />
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="npm.start" />
+        <item itemvalue="npm.build" />
+      </list>
+    </recent_temporary>
   </component>
   <component name="SvnConfiguration">
     <configuration />
@@ -50,12 +91,26 @@
       <option name="presentableId" value="Default" />
       <updated>1577698882416</updated>
       <workItem from="1577698883788" duration="845000" />
-      <workItem from="1577699859864" duration="240000" />
+      <workItem from="1577699859864" duration="1971000" />
     </task>
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="1" />
+    <option name="exactExcludedFiles">
+      <list>
+        <option value="$PROJECT_DIR$/src/views/Create.js" />
+        <option value="$PROJECT_DIR$/src/views/Layout.js" />
+        <option value="$PROJECT_DIR$/src/views/Home.js" />
+        <option value="$PROJECT_DIR$/src/lib/defines.js" />
+        <option value="$PROJECT_DIR$/src/lib/store.js" />
+        <option value="$PROJECT_DIR$/src/lib/events.js" />
+        <option value="$PROJECT_DIR$/src/lib/api.js" />
+        <option value="$PROJECT_DIR$/src/core.js" />
+        <option value="$PROJECT_DIR$/src/app.js" />
+        <option value="$PROJECT_DIR$/../tools/scripts/action1.js" />
+      </list>
+    </option>
   </component>
   <component name="Vcs.Log.Tabs.Properties">
     <option name="TAB_STATES">
@@ -75,25 +130,25 @@
       <screen x="0" y="0" width="1920" height="1200" />
     </state>
     <state x="698" y="387" key="#com.intellij.ide.scriptingContext.ui.PerFileMappingsDialogWrapper/0.0.1920.1200@0.0.1920.1200" timestamp="1577699132146" />
-    <state width="1899" height="344" key="GridCell.Tab.0.bottom" timestamp="1577699354307">
+    <state width="1920" height="396" key="GridCell.Tab.0.bottom" timestamp="1577701007229">
       <screen x="0" y="0" width="1920" height="1200" />
     </state>
-    <state width="1899" height="344" key="GridCell.Tab.0.bottom/0.0.1920.1200@0.0.1920.1200" timestamp="1577699354307" />
-    <state width="1899" height="344" key="GridCell.Tab.0.center" timestamp="1577699354306">
+    <state width="1920" height="396" key="GridCell.Tab.0.bottom/0.0.1920.1200@0.0.1920.1200" timestamp="1577701007229" />
+    <state width="1920" height="396" key="GridCell.Tab.0.center" timestamp="1577701007228">
       <screen x="0" y="0" width="1920" height="1200" />
     </state>
-    <state width="1899" height="344" key="GridCell.Tab.0.center/0.0.1920.1200@0.0.1920.1200" timestamp="1577699354306" />
-    <state width="1899" height="344" key="GridCell.Tab.0.left" timestamp="1577699354305">
+    <state width="1920" height="396" key="GridCell.Tab.0.center/0.0.1920.1200@0.0.1920.1200" timestamp="1577701007228" />
+    <state width="1920" height="396" key="GridCell.Tab.0.left" timestamp="1577701007228">
       <screen x="0" y="0" width="1920" height="1200" />
     </state>
-    <state width="1899" height="344" key="GridCell.Tab.0.left/0.0.1920.1200@0.0.1920.1200" timestamp="1577699354305" />
-    <state width="1899" height="344" key="GridCell.Tab.0.right" timestamp="1577699354306">
+    <state width="1920" height="396" key="GridCell.Tab.0.left/0.0.1920.1200@0.0.1920.1200" timestamp="1577701007228" />
+    <state width="1920" height="396" key="GridCell.Tab.0.right" timestamp="1577701007229">
       <screen x="0" y="0" width="1920" height="1200" />
     </state>
-    <state width="1899" height="344" key="GridCell.Tab.0.right/0.0.1920.1200@0.0.1920.1200" timestamp="1577699354306" />
-    <state x="469" y="239" key="SettingsEditor" timestamp="1577699842924">
+    <state width="1920" height="396" key="GridCell.Tab.0.right/0.0.1920.1200@0.0.1920.1200" timestamp="1577701007229" />
+    <state x="469" y="239" key="SettingsEditor" timestamp="1577701917951">
       <screen x="0" y="0" width="1920" height="1200" />
     </state>
-    <state x="469" y="239" key="SettingsEditor/0.0.1920.1200@0.0.1920.1200" timestamp="1577699842924" />
+    <state x="469" y="239" key="SettingsEditor/0.0.1920.1200@0.0.1920.1200" timestamp="1577701917951" />
   </component>
 </project>
