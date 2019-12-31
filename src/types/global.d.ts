@@ -6,31 +6,29 @@ declare global {
 		[key:string]:any
 	}
 
+	interface OAuth2Status {
+		access_token:string,
+		expires_in:number
+	}
+
+	type View = 'HOME'|'AUTH'|'ASSETS'
+
 	interface AppData {
-		view:'HOME'|'AUTH'
-
+		view:View
 		page?:PageData
-
 		selection?:FieldData[]
 
-		figma?:OAuth2Response
+		figma?:OAuth2Status
+		google?:OAuth2Status
 
-		google?:OAuth2Response
-
-		google_api_key?:string
-		google_api_expired?:number
-
-		figma_api_expired?:number
-		figma_api_key?:string,
-		figma_team_id?:string
+		team?:string
+		files?:string[]
 	}
 
 	interface PageData {
-		url:string
 		id:string
+		url:string
 		name:string
-
-		[key:string]:any
 	}
 
 	interface FieldData {
@@ -39,21 +37,17 @@ declare global {
 		category:string
 		parameter:string
 		component:string
-		values:{
-			text:string
-			color:string
-			bold:boolean
-		}[]
+		values:ValueData[]
 		value:string
 		tooltip:string
 		placeholder:string
 	}
 
-	interface OAuth2Response {
-		access_token:string,
-		expires_in:number
+	interface ValueData {
+		text:string
+		color:string
+		bold:boolean
 	}
-
 }
 
 export {}

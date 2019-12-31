@@ -1,31 +1,41 @@
-import React from 'react'
+import React, { ReactComponentElement, ReactElement } from 'react'
 import styled, { createGlobalStyle } from 'styled-components'
 import { Provider, Subscribe } from 'unstated'
 import { store } from '../lib/store'
 import { Home } from './Home'
 import { Auth } from './Auth'
+import { Assets } from './Assets'
 
-const views:{ [key:string]: any} = {
-	HOME: Home,
-	AUTH: Auth
+function getView(view:View): any {
+	switch (view) {
+		case 'HOME':
+			return Home
+		case 'AUTH':
+			return Auth
+		case 'ASSETS':
+			return Assets
+
+		default:
+			return Home
+	}
 }
 
-const placeholder = <div>{`View "${store.state.view}" not found!`}</div>
-
-export const Layout = () => (
-	<>
-		<GlobalStyled/>
-		<Provider>
-			<Subscribe to={[store]}>
-				{() => (
-					<WrapperStyled>
-						{React.createElement(views[store.state.view] || placeholder)}
-					</WrapperStyled>
-				)}
-			</Subscribe>
-		</Provider>
-	</>
-)
+export const Layout = () => {
+	return (
+		<>
+			<GlobalStyled/>
+			<Provider>
+				<Subscribe to={[store]}>
+					{() => (
+						<WrapperStyled>
+							{React.createElement(getView(store.state.view))}
+						</WrapperStyled>
+					)}
+				</Subscribe>
+			</Provider>
+		</>
+	)
+}
 const GlobalStyled = createGlobalStyle`
 	body {
 		padding: 0;

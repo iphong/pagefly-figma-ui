@@ -16,7 +16,7 @@ export class Store extends Container<AppData> {
 		listen('view', this.navigate)
 		listen('page', this.setPage)
 		listen('selection', this.setSelection)
-		emit('load', this.onLoad)
+		// emit('load', this.onLoad)
 	}
 
 	onUpdate = () => {
@@ -41,17 +41,14 @@ export class Store extends Container<AppData> {
 	}
 
 	onLoad = async (state) => {
+		console.log(state)
 		await this.setState(state)
 		this.subscribe(this.onUpdate)
-		if (!this.state.figma || !this.state.google || !this.state.figma_team_id) {
+		if (!this.state.figma || !this.state.google || !this.state.team) {
 			await this.navigate('AUTH')
 		} else {
 			figma.auth = this.state.figma
 			google.auth = this.state.google
-
-
-			console.log(await figma.fileComponents("R6ER7QFSbl0X2dy5KCCDJa"))
-			console.log(await figma.get("files/R6ER7QFSbl0X2dy5KCCDJa/"))
 		}
 	}
 	save = () => emit('save', this.state)
@@ -96,7 +93,7 @@ export class Store extends Container<AppData> {
 	}
 	logout = async () => {
 		await this.setState({
-			figma_team_id: null,
+			team: null,
 			figma: null,
 			google: null
 		})
@@ -106,3 +103,4 @@ export class Store extends Container<AppData> {
 
 
 export const store:Store = new Store
+window.app = store

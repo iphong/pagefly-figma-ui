@@ -35,10 +35,10 @@ export const Home = () => {
 	const PageVariations = () => (
 		<table>
 			<tbody>
-			{page.items.map(field => (
-				field.values.some(i => (i.color !== '#000000')) && field.values.length > 1 &&
-				<Field key={'f/' + field.element + '/' + field.parameter} field={field}/>
-			))}
+			{/*{page.items.map(field => (*/}
+			{/*	field.values.some(i => (i.color !== '#000000')) && field.values.length > 1 &&*/}
+			{/*	<Field key={'f/' + field.element + '/' + field.parameter} field={field}/>*/}
+			{/*))}*/}
 			</tbody>
 		</table>
 	)

@@ -4,10 +4,9 @@ import { store } from '../lib/store'
 
 async function getToken(provider:'figma'|'google') {
 	const identifier = Math.round(Math.random() * 5000).toString().padStart(5, '0') + ':' + Date.now()
-	let req, res
 	window.open('https://phongvt.herokuapp.com/auth/' + provider + '?state=' + identifier)
-	req = await fetch('https://phongvt.herokuapp.com/auth/' + provider + '/gateway?state=' + identifier)
-	res = await req.json()
+	const req = await fetch('https://phongvt.herokuapp.com/auth/' + provider + '/gateway?state=' + identifier)
+	let res = await req.json()
 	if (typeof res !== 'object') {
 		try {
 			res = JSON.parse(res)
@@ -22,19 +21,14 @@ async function getToken(provider:'figma'|'google') {
 					break
 			}
 		} catch (e) {
-			console.log('failed to parse response')
 		}
 	}
 }
 
 export const Auth = () => {
-	const [teamID, setTeamID] = React.useState('713233029226794192')
-	const complete = () => {
-		store.setState({ figma_team_id: teamID })
-	}
-	let stage
-	if (!store.state.google) {
-		stage = <main>
+	let teamID = '713233029226794192'
+	if (!store.state.google) return (
+		<main>
 			<section>
 				<h2>Step 1: Google Sheets</h2>
 			</section>
@@ -45,8 +39,9 @@ export const Auth = () => {
 				<button onClick={() => getToken('google')}>Authorize</button>
 			</nav>
 		</main>
-	} else if (!store.state.figma) {
-		stage = <main>
+	)
+	if (!store.state.figma) return (
+		<main>
 			<section>
 				<h2>Step 2: Figma</h2>
 			</section>
@@ -57,30 +52,20 @@ export const Auth = () => {
 				<button onClick={() => getToken('figma')}>Authorize</button>
 			</nav>
 		</main>
-	} else if (!store.state.figma_team_id) {
-		stage = <main>
+	)
+	if (!store.state.team) return (
+		<main>
 			<section>
 				<h2>Step 3: Your Team</h2>
 			</section>
 			<section>
 				<label>Enter Your Figma Team ID so we know where to look</label>
-				<input value={teamID} onChange={e => setTeamID(e.target.value)} />
+				<input value={teamID} onChange={e => (teamID = e.target.value)}/>
 			</section>
 			<nav>
-				<button onClick={complete}>Next</button>
-			</nav>
-		</main>
-	} else {
-		stage = <main>
-			<section>
-				<h2>Done!</h2>
-			</section>
-			<nav>
-				<button onClick={() => store.navigate('HOME')}>
-					Start Now
+				<button onClick={() => store.setState({ team: teamID, view: 'ASSETS' })}>Next
 				</button>
 			</nav>
 		</main>
-	}
-	return stage
+	)
 }

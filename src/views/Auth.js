@@ -29,7 +29,7 @@ async function getToken(provider) {
 export const Auth = () => {
     const [teamID, setTeamID] = React.useState('713233029226794192');
     const complete = () => {
-        store.setState({ figma_team_id: teamID });
+        store.setState({ team: teamID });
     };
     let stage;
     if (!store.state.google) {
@@ -50,7 +50,7 @@ export const Auth = () => {
             React.createElement("nav", null,
                 React.createElement("button", { onClick: () => getToken('figma') }, "Authorize")));
     }
-    else if (!store.state.figma_team_id) {
+    else if (!store.state.team) {
         stage = React.createElement("main", null,
             React.createElement("section", null,
                 React.createElement("h2", null, "Step 3: Your Team")),
