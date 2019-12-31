@@ -5,7 +5,7 @@ import { store } from '../lib/store'
 import { Home } from './Home'
 import { Auth } from './Auth'
 
-const views = {
+const views:{ [key:string]: any} = {
 	HOME: Home,
 	AUTH: Auth
 }
@@ -18,7 +18,7 @@ export const Layout = () => (
 		<Provider>
 			<Subscribe to={[store]}>
 				{() => (
-					<WrapperStyled className={store.isLoading ? 'loading' : ''}>
+					<WrapperStyled>
 						{React.createElement(views[store.state.view] || placeholder)}
 					</WrapperStyled>
 				)}

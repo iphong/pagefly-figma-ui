@@ -12,7 +12,7 @@ const placeholder = React.createElement("div", null, `View "${store.state.view}"
 export const Layout = () => (React.createElement(React.Fragment, null,
     React.createElement(GlobalStyled, null),
     React.createElement(Provider, null,
-        React.createElement(Subscribe, { to: [store] }, () => (React.createElement(WrapperStyled, { className: store.isLoading ? 'loading' : '' }, React.createElement(views[store.state.view] || placeholder)))))));
+        React.createElement(Subscribe, { to: [store] }, () => (React.createElement(WrapperStyled, null, React.createElement(views[store.state.view] || placeholder)))))));
 const GlobalStyled = createGlobalStyle `
 	body {
 		padding: 0;

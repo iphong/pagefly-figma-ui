@@ -1,4 +1,5 @@
 import React from 'react';
+import { figma, google } from '../lib/api';
 import { store } from '../lib/store';
 async function getToken(provider) {
     const identifier = Math.round(Math.random() * 5000).toString().padStart(5, '0') + ':' + Date.now();
@@ -11,16 +12,12 @@ async function getToken(provider) {
             res = JSON.parse(res);
             switch (provider) {
                 case 'figma':
-                    await store.setState({
-                        figma_api_key: res.access_token,
-                        figma_api_expired: Date.now() + res.expires_in
-                    });
+                    figma.auth = res;
+                    await store.setState({ figma: res });
                     break;
                 case 'google':
-                    await store.setState({
-                        google_api_key: res.access_token,
-                        google_api_expired: Date.now() + res.expires_in
-                    });
+                    google.auth = res;
+                    await store.setState({ google: res });
                     break;
             }
         }
@@ -32,10 +29,10 @@ async function getToken(provider) {
 export const Auth = () => {
     const [teamID, setTeamID] = React.useState('713233029226794192');
     const complete = () => {
-        store.setState({ figma_team_id: teamID, view: 'HOME' });
+        store.setState({ figma_team_id: teamID });
     };
     let stage;
-    if (!store.state.google_api_key) {
+    if (!store.state.google) {
         stage = React.createElement("main", null,
             React.createElement("section", null,
                 React.createElement("h2", null, "Step 1: Google Sheets")),
@@ -44,7 +41,7 @@ export const Auth = () => {
             React.createElement("nav", null,
                 React.createElement("button", { onClick: () => getToken('google') }, "Authorize")));
     }
-    else if (!store.state.figma_api_key) {
+    else if (!store.state.figma) {
         stage = React.createElement("main", null,
             React.createElement("section", null,
                 React.createElement("h2", null, "Step 2: Figma")),
@@ -61,11 +58,14 @@ export const Auth = () => {
                 React.createElement("label", null, "Enter Your Figma Team ID so we know where to look"),
                 React.createElement("input", { value: teamID, onChange: e => setTeamID(e.target.value) })),
             React.createElement("nav", null,
-                React.createElement("button", { onClick: complete }, "Let's Go")));
+                React.createElement("button", { onClick: complete }, "Next")));
     }
     else {
         stage = React.createElement("main", null,
-            React.createElement("section", null, "Finished"));
+            React.createElement("section", null,
+                React.createElement("h2", null, "Done!")),
+            React.createElement("nav", null,
+                React.createElement("button", { onClick: () => store.navigate('HOME') }, "Start Now")));
     }
     return stage;
 };

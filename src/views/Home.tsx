@@ -5,91 +5,73 @@ import { emit } from '../lib/events'
 
 export const Home = () => {
 	const page = store.state.page
-	const selection = store.state.selection
+	const selection = store.state.selection || []
 
-	let changedURL = page.url
+	let url:string = ''
+	const handleUpdate = () => store.generate(url)
 
-	const handleUpdate = () => store.generate(changedURL)
-
-	const Field = ({ field, header }) => {
+	const Field = ({ field }) => {
 		const [val, setVal] = useState(field.value)
 		return (
-			<>
-				{header ? <tr>
-					<td colSpan={2}>{field.element}</td>
-				</tr> : null}
-				<tr>
-					<th>{field.parameter}</th>
-					<td>
-						<select
-							value={val}
-							onChange={async e => {
-								field.value = e.target.value
-								await setVal(field.value)
-								await emit('update-param', field)
-							}}>
-							{field.valueColors.map(value => (
-								<option key={value.text}>{value.text}</option>
-							))}
-						</select>
-					</td>
-				</tr>
-			</>
+			<tr>
+				<th>{field.parameter}</th>
+				<td>
+					<select
+						value={val}
+						onChange={async e => {
+							field.value = e.target.value
+							await setVal(field.value)
+							await emit('update-param', field)
+						}}>
+						{field.values.map(value => (
+							<option key={value.text}>{value.text}</option>
+						))}
+					</select>
+				</td>
+			</tr>
 		)
 	}
 
-	const PageVariations = () => {
-		let lastElement
-		return (
-			<table>
-				<tbody>
-				{page.items.map(field => {
-					const header = lastElement !== field.element
-					lastElement = field.element
-					return (
-						field.valueColors.some(i => (i.color !== '#000000')) && field.valueColors.length > 1 &&
-						<Field key={'f/' + field.element + '/' + field.parameter} field={field} header={header}/>
-					)
-				})}
-				</tbody>
-			</table>
-		)
-	}
+	const PageVariations = () => (
+		<table>
+			<tbody>
+			{page.items.map(field => (
+				field.values.some(i => (i.color !== '#000000')) && field.values.length > 1 &&
+				<Field key={'f/' + field.element + '/' + field.parameter} field={field}/>
+			))}
+			</tbody>
+		</table>
+	)
 
-	const PageDetail = () => {
-		return (
-			<>
-				{
-					page.url ? (
-						<PageVariations/>
-					) : (
-						<section>
-							<label>Enter Sheet URL</label>
-							<textarea onChange={e => (changedURL = e.target.value)} cols={40} rows={5}/>
-						</section>
-					)
-				}
-			</>
-		)
-	}
-	const SelectionDetail = () => {
-		return (
-			<>
-				{selection.map(node => {
-					return <section key={node.parameter}>
-						<dl>
-
-							<dt>{node.parameter}</dt>
-							{node.valueColors.map(value => {
-								return <dd key={value.text}
-								           style={{ color: value.color }}>{value.text} {value.bold ? ' (default)' : ''}</dd>
-							})}
-						</dl>
+	const PageDetail = () => (
+		<>
+			{
+				page.url ? (
+					<PageVariations/>
+				) : (
+					<section>
+						<label>Enter Sheet URL</label>
+						<textarea onChange={e => (url = e.target.value)} cols={40} rows={5}/>
 					</section>
-				})}
-			</>
-		)
-	}
+				)
+			}
+		</>
+	)
+
+	const SelectionDetail = () => (
+		<>
+			{selection.map(node => (
+				<section key={node.parameter}>
+					<dl>
+						<dt>{node.parameter}</dt>
+						{node.values.map(value => {
+							return <dd key={value.text}>{value.text}</dd>
+						})}
+					</dl>
+				</section>
+			))}
+		</>
+	)
 
 	return (
 		<Main>
@@ -97,6 +79,9 @@ export const Home = () => {
 			<nav>
 				<button onClick={handleUpdate}>
 					{page.url ? 'Update' : 'Create'}
+				</button>
+				<button onClick={store.logout}>
+					Logout
 				</button>
 			</nav>
 		</Main>

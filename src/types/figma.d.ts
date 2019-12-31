@@ -3,10 +3,6 @@ declare global {
 	const figma: PluginAPI
 	const __html__: string
 
-	interface Window {
-		[key:string]: any
-	}
-
 	interface PluginAPI {
 		readonly apiVersion: '1.0.0'
 		readonly command: string

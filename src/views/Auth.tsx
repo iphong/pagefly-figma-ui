@@ -1,4 +1,5 @@
 import React from 'react'
+import { figma, google } from '../lib/api'
 import { store } from '../lib/store'
 
 async function getToken(provider:'figma'|'google') {
@@ -12,16 +13,12 @@ async function getToken(provider:'figma'|'google') {
 			res = JSON.parse(res)
 			switch (provider) {
 				case 'figma':
-					await store.setState({
-						figma_api_key: res.access_token,
-						figma_api_expired: Date.now() + res.expires_in
-					})
+					figma.auth = res
+					await store.setState({ figma: res })
 					break
 				case 'google':
-					await store.setState({
-						google_api_key: res.access_token,
-						google_api_expired: Date.now() + res.expires_in
-					})
+					google.auth = res
+					await store.setState({ google: res })
 					break
 			}
 		} catch (e) {
@@ -33,10 +30,10 @@ async function getToken(provider:'figma'|'google') {
 export const Auth = () => {
 	const [teamID, setTeamID] = React.useState('713233029226794192')
 	const complete = () => {
-		store.setState({ figma_team_id: teamID, view: 'HOME' })
+		store.setState({ figma_team_id: teamID })
 	}
 	let stage
-	if (!store.state.google_api_key) {
+	if (!store.state.google) {
 		stage = <main>
 			<section>
 				<h2>Step 1: Google Sheets</h2>
@@ -48,7 +45,7 @@ export const Auth = () => {
 				<button onClick={() => getToken('google')}>Authorize</button>
 			</nav>
 		</main>
-	} else if (!store.state.figma_api_key) {
+	} else if (!store.state.figma) {
 		stage = <main>
 			<section>
 				<h2>Step 2: Figma</h2>
@@ -70,12 +67,19 @@ export const Auth = () => {
 				<input value={teamID} onChange={e => setTeamID(e.target.value)} />
 			</section>
 			<nav>
-				<button onClick={complete}>Let's Go</button>
+				<button onClick={complete}>Next</button>
 			</nav>
 		</main>
 	} else {
 		stage = <main>
-			<section>Finished</section>
+			<section>
+				<h2>Done!</h2>
+			</section>
+			<nav>
+				<button onClick={() => store.navigate('HOME')}>
+					Start Now
+				</button>
+			</nav>
 		</main>
 	}
 	return stage

@@ -213,22 +213,23 @@ function group(items, key, sub) {
 }
 function merge(keys, values, grid) {
     const items = [];
-    values.forEach((data, rowIndex) => {
-        const item = {};
-        Object.entries(FIELDS).forEach(([key, value]) => {
-            const index = keys.indexOf(value);
-            if (key === 'values') {
-                item.valueColors = getColorLines(grid.sheets[0].data[0].rowData[rowIndex].values[index]);
-            }
-            if (key === 'parameter') {
-                item.paramColors = getColorLines(grid.sheets[0].data[0].rowData[rowIndex].values[index]);
-            }
-            item[key] = data[index] || '';
-        });
-        // item.parameter = item.parameter.split(CRLF)[0]
-        if (item.element && item.group && item.component)
-            items.push(item);
-    });
+    // values.forEach((data:any[], rowIndex) => {
+    // 	const item:FieldData = {}
+    //
+    // 	Object.entries(FIELDS).forEach(([key, value]) => {
+    // 		const index = keys.indexOf(value)
+    // 		if (key === 'values') {
+    // 			item.valueColors = getColorLines(grid.sheets[0].data[0].rowData[rowIndex].values[index])
+    // 		}
+    // 		if (key === 'parameter') {
+    // 			item.paramColors = getColorLines(grid.sheets[0].data[0].rowData[rowIndex].values[index])
+    // 		}
+    // 		item[key] = data[index] || ''
+    // 	})
+    // 	// item.parameter = item.parameter.split(CRLF)[0]
+    //
+    // 	if (item.element && item.group && item.component) items.push(item)
+    // })
     return group(items, 'element', 'group');
 }
 function draw(payload) {

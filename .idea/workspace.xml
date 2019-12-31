@@ -2,27 +2,34 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="7f5cf953-2f4d-48d5-9d91-dfc3dc78a7df" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/src/types/global.d.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/manifest.json" beforeDir="false" afterPath="$PROJECT_DIR$/manifest.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/core.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/core.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/core.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/core.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/global.d.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/global.d.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/global.d.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/types/figma.d.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/lib/api.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/api.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/lib/api.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/api.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/lib/store.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/store.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/lib/store.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/store.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/views/Create.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/views/Auth.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/views/Create.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/views/Auth.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/views/Auth.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/views/Auth.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/views/Auth.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/views/Auth.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/views/Home.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/views/Home.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/views/Home.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/views/Home.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/views/Layout.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/views/Layout.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/views/Layout.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/views/Layout.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tsconfig.json" beforeDir="false" afterPath="$PROJECT_DIR$/tsconfig.json" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="TypeScript File" />
+      </list>
+    </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -39,7 +46,9 @@
     <auto-save>true</auto-save>
   </component>
   <component name="ProjectId" id="1VhIQJ9YskNJcVvr32AIW4DEPzC" />
-  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
@@ -61,13 +70,14 @@
     <property name="ts.external.directory.path" value="$PROJECT_DIR$/node_modules/typescript/lib" />
   </component>
   <component name="RecentsManager">
-    <key name="CopyFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/../tools" />
-    </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src/types" />
       <recent name="$PROJECT_DIR$/src" />
       <recent name="$PROJECT_DIR$" />
       <recent name="$PROJECT_DIR$/src/lib" />
+    </key>
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/../tools" />
     </key>
   </component>
   <component name="RunManager" selected="npm.start">
@@ -112,8 +122,16 @@
       <workItem from="1577699859864" duration="2174000" />
       <workItem from="1577710040607" duration="4468000" />
       <workItem from="1577717064101" duration="782000" />
-      <workItem from="1577748164454" duration="3824000" />
+      <workItem from="1577748164454" duration="12192000" />
     </task>
+    <task id="LOCAL-00001" summary="change">
+      <created>1577752433052</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1577752433053</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -124,7 +142,6 @@
         <option value="$PROJECT_DIR$/src/lib/events.js" />
         <option value="$PROJECT_DIR$/src/app.js" />
         <option value="$PROJECT_DIR$/src/core.js" />
-        <option value="$PROJECT_DIR$/src/views/Create.js" />
         <option value="$PROJECT_DIR$/src/views/Home.js" />
         <option value="$PROJECT_DIR$/src/views/Layout.js" />
         <option value="$PROJECT_DIR$/src/lib/store.js" />
@@ -146,6 +163,10 @@
       </map>
     </option>
   </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="change" />
+    <option name="LAST_COMMIT_MESSAGE" value="change" />
+  </component>
   <component name="WindowStateProjectService">
     <state x="698" y="387" key="#com.intellij.ide.scriptingContext.ui.PerFileMappingsDialogWrapper" timestamp="1577699132146">
       <screen x="0" y="0" width="1920" height="1200" />
@@ -155,22 +176,26 @@
       <screen x="0" y="0" width="1920" height="1200" />
     </state>
     <state x="506" y="173" key="#com.intellij.refactoring.rename.AutomaticRenamingDialog/0.0.1920.1200@0.0.1920.1200" timestamp="1577748263034" />
-    <state width="1899" height="423" key="GridCell.Tab.0.bottom" timestamp="1577748856583">
+    <state x="554" y="302" key="CommitChangelistDialog2" timestamp="1577752432904">
       <screen x="0" y="0" width="1920" height="1200" />
     </state>
-    <state width="1899" height="423" key="GridCell.Tab.0.bottom/0.0.1920.1200@0.0.1920.1200" timestamp="1577748856583" />
-    <state width="1899" height="423" key="GridCell.Tab.0.center" timestamp="1577748856580">
+    <state x="554" y="302" key="CommitChangelistDialog2/0.0.1920.1200@0.0.1920.1200" timestamp="1577752432904" />
+    <state width="1920" height="388" key="GridCell.Tab.0.bottom" timestamp="1577756335119">
       <screen x="0" y="0" width="1920" height="1200" />
     </state>
-    <state width="1899" height="423" key="GridCell.Tab.0.center/0.0.1920.1200@0.0.1920.1200" timestamp="1577748856580" />
-    <state width="1899" height="423" key="GridCell.Tab.0.left" timestamp="1577748856537">
+    <state width="1920" height="388" key="GridCell.Tab.0.bottom/0.0.1920.1200@0.0.1920.1200" timestamp="1577756335119" />
+    <state width="1920" height="388" key="GridCell.Tab.0.center" timestamp="1577756335118">
       <screen x="0" y="0" width="1920" height="1200" />
     </state>
-    <state width="1899" height="423" key="GridCell.Tab.0.left/0.0.1920.1200@0.0.1920.1200" timestamp="1577748856537" />
-    <state width="1899" height="423" key="GridCell.Tab.0.right" timestamp="1577748856581">
+    <state width="1920" height="388" key="GridCell.Tab.0.center/0.0.1920.1200@0.0.1920.1200" timestamp="1577756335118" />
+    <state width="1920" height="388" key="GridCell.Tab.0.left" timestamp="1577756335117">
       <screen x="0" y="0" width="1920" height="1200" />
     </state>
-    <state width="1899" height="423" key="GridCell.Tab.0.right/0.0.1920.1200@0.0.1920.1200" timestamp="1577748856581" />
+    <state width="1920" height="388" key="GridCell.Tab.0.left/0.0.1920.1200@0.0.1920.1200" timestamp="1577756335117" />
+    <state width="1920" height="388" key="GridCell.Tab.0.right" timestamp="1577756335118">
+      <screen x="0" y="0" width="1920" height="1200" />
+    </state>
+    <state width="1920" height="388" key="GridCell.Tab.0.right/0.0.1920.1200@0.0.1920.1200" timestamp="1577756335118" />
     <state width="1899" height="423" key="GridCell.Tab.1.bottom" timestamp="1577748856586">
       <screen x="0" y="0" width="1920" height="1200" />
     </state>

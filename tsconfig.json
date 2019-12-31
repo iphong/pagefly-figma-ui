@@ -1,12 +1,13 @@
 {
-	"exclude": ["./old"],
-	"include": ["./src"],
+	"exclude": ["old", "node_modules"],
+	"include": ["src", "src/lib", "src/views", "src/types"],
 	"compilerOptions": {
 		"jsx": "react",
 		"target": "ES2018",
 		"module": "ESNext",
 		"moduleResolution": "node",
 		"importHelpers": true,
-		"allowSyntheticDefaultImports": true
+		"allowSyntheticDefaultImports": true,
+		"typeRoots": ["src/types"]
 	}
 }

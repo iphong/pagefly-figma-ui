@@ -25,23 +25,9 @@ figma.showUI(__html__, { visible: true, width: 300, height: 300 })
 const component_names = UI_COMPONENT_NAMES.map(slugify)
 const storageKey = 'PF-APP3'
 
-interface FieldData {
-	group?:string,
-	values?:string|string[],
-	element?:string,
-	tooltip?:string,
-	category?:string,
-	condition?:string,
-	parameter?:string,
-	component?:string,
-	placeholder?:string
-
-	[key:string]:any
-}
-
 type group_t = Map<string, Map<string, Set<FieldData>>>|Map<string, Set<FieldData>>
 
-const FIELDS:FieldData = {
+const FIELDS:{ [key:string]: string } = {
 	group: 'group',
 	values: 'value(s)',
 	element: 'element',
@@ -253,23 +239,23 @@ function group(items:object[], key:string, sub?:string):group_t {
 function merge(keys:string[], values:string[][], grid) {
 	const items:FieldData[] = []
 
-	values.forEach((data:any[], rowIndex) => {
-		const item:FieldData = {}
-
-		Object.entries(FIELDS).forEach(([key, value]) => {
-			const index = keys.indexOf(value)
-			if (key === 'values') {
-				item.valueColors = getColorLines(grid.sheets[0].data[0].rowData[rowIndex].values[index])
-			}
-			if (key === 'parameter') {
-				item.paramColors = getColorLines(grid.sheets[0].data[0].rowData[rowIndex].values[index])
-			}
-			item[key] = data[index] || ''
-		})
-		// item.parameter = item.parameter.split(CRLF)[0]
-
-		if (item.element && item.group && item.component) items.push(item)
-	})
+	// values.forEach((data:any[], rowIndex) => {
+	// 	const item:FieldData = {}
+	//
+	// 	Object.entries(FIELDS).forEach(([key, value]) => {
+	// 		const index = keys.indexOf(value)
+	// 		if (key === 'values') {
+	// 			item.valueColors = getColorLines(grid.sheets[0].data[0].rowData[rowIndex].values[index])
+	// 		}
+	// 		if (key === 'parameter') {
+	// 			item.paramColors = getColorLines(grid.sheets[0].data[0].rowData[rowIndex].values[index])
+	// 		}
+	// 		item[key] = data[index] || ''
+	// 	})
+	// 	// item.parameter = item.parameter.split(CRLF)[0]
+	//
+	// 	if (item.element && item.group && item.component) items.push(item)
+	// })
 
 	return group(items, 'element', 'group') as group_t
 }
