@@ -27,7 +27,8 @@ export class FigmaAPI {
 		return new Promise((resolve:resolve_t, reject:reject_t) => {
 			const req = new XMLHttpRequest
 			req.open('GET', `https://api.figma.com/v1/` + path, true)
-			req.setRequestHeader('X-FIGMA-TOKEN', this._token)
+			// req.setRequestHeader('X-FIGMA-TOKEN', this._token)
+			req.setRequestHeader('Authorization', 'Bearer ' + this._token)
 			req.addEventListener('load', loadHandler(resolve, reject))
 			req.send()
 		})
@@ -59,17 +60,18 @@ export class GoogleAPI {
 	static API_URL_ROOT = 'https://sheets.googleapis.com/v4/'
 	static URL_REGEX_ID = /^https:\/\/docs.google.com\/spreadsheets\/d\/([^\\]+)\/edit.*$/
 
-	_apiKey:string
+	_token:string
 
-	constructor(apiKey:string) {
-		this._apiKey = apiKey
+	constructor(token:string) {
+		this._token = token
 	}
 
 	query = (path:api_scope_t, ranges?:string, includeGridData:boolean = false):promise_t => {
 		return new Promise((resolve:resolve_t, reject:reject_t) => {
 			const req = new XMLHttpRequest
-			const url = GoogleAPI.API_URL_ROOT + path + '?' + (includeGridData ? 'includeGridData=true&' : '') + (ranges ? 'ranges=' + ranges + '&' : '') + 'key=' + this._apiKey
+			const url = GoogleAPI.API_URL_ROOT + path + '?' + (includeGridData ? 'includeGridData=true&' : '') + (ranges ? 'ranges=' + ranges + '&' : '')
 			req.open('GET', url, true)
+			req.setRequestHeader('Authorization', 'Bearer ' + this._token)
 			req.addEventListener('load', loadHandler(resolve, reject))
 			req.send()
 		})

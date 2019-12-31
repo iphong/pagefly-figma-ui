@@ -15,7 +15,8 @@ export class FigmaAPI {
             return new Promise((resolve, reject) => {
                 const req = new XMLHttpRequest;
                 req.open('GET', `https://api.figma.com/v1/` + path, true);
-                req.setRequestHeader('X-FIGMA-TOKEN', this._token);
+                // req.setRequestHeader('X-FIGMA-TOKEN', this._token)
+                req.setRequestHeader('Authorization', 'Bearer ' + this._token);
                 req.addEventListener('load', loadHandler(resolve, reject));
                 req.send();
             });
@@ -38,12 +39,13 @@ export class FigmaAPI {
     }
 }
 export class GoogleAPI {
-    constructor(apiKey) {
+    constructor(token) {
         this.query = (path, ranges, includeGridData = false) => {
             return new Promise((resolve, reject) => {
                 const req = new XMLHttpRequest;
-                const url = GoogleAPI.API_URL_ROOT + path + '?' + (includeGridData ? 'includeGridData=true&' : '') + (ranges ? 'ranges=' + ranges + '&' : '') + 'key=' + this._apiKey;
+                const url = GoogleAPI.API_URL_ROOT + path + '?' + (includeGridData ? 'includeGridData=true&' : '') + (ranges ? 'ranges=' + ranges + '&' : '');
                 req.open('GET', url, true);
+                req.setRequestHeader('Authorization', 'Bearer ' + this._token);
                 req.addEventListener('load', loadHandler(resolve, reject));
                 req.send();
             });
@@ -65,7 +67,7 @@ export class GoogleAPI {
                 values: async (range) => (await this.query(`spreadsheets/${id}/values/${range}`)).values
             };
         };
-        this._apiKey = apiKey;
+        this._token = token;
     }
 }
 GoogleAPI.API_URL_ROOT = 'https://sheets.googleapis.com/v4/';

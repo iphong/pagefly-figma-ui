@@ -1,4 +1,5 @@
 import { emit, listen } from './lib/events'
+import groupBy from 'lodash/groupBy'
 import { UI_COMPONENT_NAMES } from './lib/defines'
 
 listen('load', load)
@@ -22,6 +23,7 @@ figma.loadFontAsync({ family: 'Roboto', style: 'Black' })
 figma.showUI(__html__, { visible: true, width: 300, height: 300 })
 
 const component_names = UI_COMPONENT_NAMES.map(slugify)
+const storageKey = 'PF-APP3'
 
 interface FieldData {
 	group?:string,
@@ -205,7 +207,7 @@ let currentLabel
 async function load() {
 	gatherComponentInfo()
 	updateVisibility()
-	const data = await figma.clientStorage.getAsync('app-store-data') || {}
+	const data = await figma.clientStorage.getAsync(storageKey) || {}
 	data.page = readPage(figma.currentPage)
 	data.selection = getSelection()
 	return data
@@ -214,7 +216,7 @@ async function load() {
 async function save(data) {
 	delete data.page
 	delete data.selection
-	return await figma.clientStorage.setAsync('app-store-data', data)
+	return await figma.clientStorage.setAsync(storageKey, data)
 }
 
 function readPage(page = figma.currentPage) {
@@ -244,7 +246,6 @@ function group(items:object[], key:string, sub?:string):group_t {
 		output.forEach((v, k) => {
 			output.set(k, group(v, sub))
 		})
-
 	}
 	return output
 }
@@ -254,30 +255,22 @@ function merge(keys:string[], values:string[][], grid) {
 
 	values.forEach((data:any[], rowIndex) => {
 		const item:FieldData = {}
+
 		Object.entries(FIELDS).forEach(([key, value]) => {
 			const index = keys.indexOf(value)
 			if (key === 'values') {
 				item.valueColors = getColorLines(grid.sheets[0].data[0].rowData[rowIndex].values[index])
-
 			}
 			if (key === 'parameter') {
 				item.paramColors = getColorLines(grid.sheets[0].data[0].rowData[rowIndex].values[index])
 			}
 			item[key] = data[index] || ''
 		})
-		item.parameter = item.parameter.split(CRLF)[0]
-
-		if (typeof item.values === 'string')
-			item.values = item.values.split(CRLF)
-
-		if (item.valueColors.length > 1) {
-			item.value = item.valueColors.find(c => c.bold).text
-		} else {
-			item.value = item.values[0]
-		}
+		// item.parameter = item.parameter.split(CRLF)[0]
 
 		if (item.element && item.group && item.component) items.push(item)
 	})
+
 	return group(items, 'element', 'group') as group_t
 }
 
@@ -286,7 +279,6 @@ function draw(payload) {
 	const keys = data.slice(0, 1)[0].map((c?:string) => c ? c.toLowerCase() : '')
 	const values = data.slice(1)
 	const items = merge(keys, values, grid)
-
 
 	drawPage(payload)
 	items.forEach((groups, element) => {

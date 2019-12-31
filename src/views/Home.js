@@ -19,7 +19,7 @@ export const Home = () => {
                             field.value = e.target.value;
                             await setVal(field.value);
                             await emit('update-param', field);
-                        } }, field.values.map(value => (React.createElement("option", { key: value }, value))))))));
+                        } }, field.valueColors.map(value => (React.createElement("option", { key: value.text }, value.text))))))));
     };
     const PageVariations = () => {
         let lastElement;
@@ -27,7 +27,7 @@ export const Home = () => {
             React.createElement("tbody", null, page.items.map(field => {
                 const header = lastElement !== field.element;
                 lastElement = field.element;
-                return (field.valueColors.some(i => (i.color !== '#000000')) && field.values.length > 1 &&
+                return (field.valueColors.some(i => (i.color !== '#000000')) && field.valueColors.length > 1 &&
                     React.createElement(Field, { key: 'f/' + field.element + '/' + field.parameter, field: field, header: header }));
             }))));
     };

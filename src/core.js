@@ -17,6 +17,7 @@ figma.loadFontAsync({ family: 'Roboto', style: 'Bold' });
 figma.loadFontAsync({ family: 'Roboto', style: 'Black' });
 figma.showUI(__html__, { visible: true, width: 300, height: 300 });
 const component_names = UI_COMPONENT_NAMES.map(slugify);
+const storageKey = 'PF-APP3';
 const FIELDS = {
     group: 'group',
     values: 'value(s)',
@@ -171,7 +172,7 @@ let currentLabel;
 async function load() {
     gatherComponentInfo();
     updateVisibility();
-    const data = await figma.clientStorage.getAsync('app-store-data') || {};
+    const data = await figma.clientStorage.getAsync(storageKey) || {};
     data.page = readPage(figma.currentPage);
     data.selection = getSelection();
     return data;
@@ -179,7 +180,7 @@ async function load() {
 async function save(data) {
     delete data.page;
     delete data.selection;
-    return await figma.clientStorage.setAsync('app-store-data', data);
+    return await figma.clientStorage.setAsync(storageKey, data);
 }
 function readPage(page = figma.currentPage) {
     let id = page.getPluginData('PF-ID');
@@ -224,15 +225,7 @@ function merge(keys, values, grid) {
             }
             item[key] = data[index] || '';
         });
-        item.parameter = item.parameter.split(CRLF)[0];
-        if (typeof item.values === 'string')
-            item.values = item.values.split(CRLF);
-        if (item.valueColors.length > 1) {
-            item.value = item.valueColors.find(c => c.bold).text;
-        }
-        else {
-            item.value = item.values[0];
-        }
+        // item.parameter = item.parameter.split(CRLF)[0]
         if (item.element && item.group && item.component)
             items.push(item);
     });

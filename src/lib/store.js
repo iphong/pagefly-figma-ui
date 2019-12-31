@@ -9,9 +9,9 @@ export class Store extends Container {
             view: 'HOME',
             page: { url: '', title: '', items: [] },
             selection: [],
-            google_api_key: 'AIzaSyDiGd0_Em7NgMbefuKeBehAMTrYHlG2nX8',
-            figma_api_key: '29587-0a62fa8c-c444-4460-a702-d49d8841d3c3',
-            figma_team_id: '713233029226794192',
+            google_api_key: '',
+            figma_api_key: '',
+            figma_team_id: '',
             figma_files: ['3uYkKPR3FJBC5w9DCj6AqZ', '6NJFtH7zbodiX5TVKJaI7s', 'R6ER7QFSbl0X2dy5KCCDJa'],
             figma_components: null,
             figma_styles: null
@@ -31,12 +31,16 @@ export class Store extends Container {
         this.onLoad = async (state) => {
             await this.setState(state);
             this.subscribe(this.onUpdate);
-            this.fetch();
+            if (!this.state.figma_api_key || !this.state.google_api_key || !this.state.figma_team_id) {
+                await this.navigate('AUTH');
+            }
+            else {
+                this.figma = new FigmaAPI(this.state.figma_api_key, this.state.figma_team_id);
+                this.google = new GoogleAPI(this.state.google_api_key);
+                await this.fetch();
+            }
         };
         this.onUpdate = () => {
-            this.figma._team = this.state.figma_team_id;
-            this.figma._token = this.state.figma_api_key;
-            this.google._apiKey = this.state.google_api_key;
             emit('save', this.state);
         };
         this.navigate = async (view) => {
@@ -71,13 +75,13 @@ export class Store extends Container {
                 });
                 payload.time = Date.now();
                 payload.data = await sheet.values(payload.sheet + (sheet.range ? '!' + sheet.range : ''));
+                console.log(payload.data);
                 payload.grid = await sheet.get(`${payload.sheet}!A2:M${payload.data.length}`, true);
+                console.log(payload.grid);
                 await emit('draw', payload);
             });
             await this.setLoading(false);
         };
-        this.figma = new FigmaAPI(this.state.figma_api_key, this.state.figma_team_id);
-        this.google = new GoogleAPI(this.state.google_api_key);
         listen('view', this.navigate);
         listen('page', this.setPage);
         listen('selection', this.setSelection);

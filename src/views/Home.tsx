@@ -28,8 +28,8 @@ export const Home = () => {
 								await setVal(field.value)
 								await emit('update-param', field)
 							}}>
-							{field.values.map(value => (
-								<option key={value}>{value}</option>
+							{field.valueColors.map(value => (
+								<option key={value.text}>{value.text}</option>
 							))}
 						</select>
 					</td>
@@ -47,7 +47,7 @@ export const Home = () => {
 					const header = lastElement !== field.element
 					lastElement = field.element
 					return (
-						field.valueColors.some(i => (i.color !== '#000000')) && field.values.length > 1 &&
+						field.valueColors.some(i => (i.color !== '#000000')) && field.valueColors.length > 1 &&
 						<Field key={'f/' + field.element + '/' + field.parameter} field={field} header={header}/>
 					)
 				})}

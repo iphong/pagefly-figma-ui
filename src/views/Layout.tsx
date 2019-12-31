@@ -3,11 +3,11 @@ import styled, { createGlobalStyle } from 'styled-components'
 import { Provider, Subscribe } from 'unstated'
 import { store } from '../lib/store'
 import { Home } from './Home'
-import { Create } from './Create'
+import { Auth } from './Auth'
 
 const views = {
 	HOME: Home,
-	CREATE: Create
+	AUTH: Auth
 }
 
 const placeholder = <div>{`View "${store.state.view}" not found!`}</div>
