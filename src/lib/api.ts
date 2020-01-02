@@ -1,5 +1,3 @@
-import { store } from './store'
-
 export class API<Params extends object|any> {
 	protected _url:string
 	protected _token:string
@@ -22,7 +20,7 @@ export class API<Params extends object|any> {
 		const identifier = Math.round(Math.random() * 5000).toString().padStart(5, '0') + ':' + Date.now()
 		window.open('https://phongvt.herokuapp.com/auth/' + provider + '?state=' + identifier)
 		const req = await fetch('https://phongvt.herokuapp.com/auth/' + provider + '/gateway?state=' + identifier)
-		let res:OAuth2Status = await req.json()
+		let res = await req.json()
 		if (typeof res !== 'object') {
 			try {
 				res = JSON.parse(res)
@@ -43,7 +41,18 @@ export class API<Params extends object|any> {
 		}
 		const query = params ? Object.entries(params).map(([k, v]) => `${k}=${v}`).join('&') : ''
 		const request = await fetch(`${this._url}/${path}?${query}`, { headers: { Authorization: `Bearer ${this._token}` } })
-		return await request.json()
+		const res = await request.json()
+		if (res.error) {
+			if (res.error.code === 401) {
+				console.log('API unauthorized')
+				await this.login()
+				await this.query(path, params)
+			} else {
+				console.log('API ERROR', res.error)
+				throw res.error
+			}
+		}
+		return res
 	}
 }
 

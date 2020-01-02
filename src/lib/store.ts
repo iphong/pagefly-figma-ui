@@ -3,7 +3,7 @@ import { figma, google } from './api'
 import { emit, listen } from './events'
 import debounce from 'lodash/debounce'
 
-const VERSION = 8
+const VERSION = 11
 
 export class Store extends Container<AppData> {
 
@@ -15,8 +15,8 @@ export class Store extends Container<AppData> {
 		view: 'HOME',
 		page: { url: null, id: null, name: null, items: [] },
 		files: [
-			'6NJFtH7zbodiX5TVKJaI7s', // Pagefly
 			'3uYkKPR3FJBC5w9DCj6AqZ', // Universal
+			'6NJFtH7zbodiX5TVKJaI7s', // Pagefly
 			'R6ER7QFSbl0X2dy5KCCDJa' // CTA
 		]
 	}
@@ -53,16 +53,12 @@ export class Store extends Container<AppData> {
 	setSelection = async (selection) => {
 		await this.setState({ selection })
 	}
-	setLoading = async (state:boolean) => {
-		if (this.isLoading != state) {
-			this.isLoading = state
-			await this.setState({})
-		}
-	}
 
-	onLoad = async (state) => {
+	onLoad = async (state:AppData) => {
 		if (state.VERSION !== this.state.VERSION) {
 			console.log('Different DATA version')
+			const { google, figma, team, page, selection } = state
+			await this.setState({ page, selection, google, figma, team })
 		} else {
 			await this.setState(state)
 		}
@@ -128,14 +124,6 @@ export class Store extends Container<AppData> {
 				data: values
 			})
 		}
-	}
-	logout = async () => {
-		await this.setState({
-			team: null,
-			figma: null,
-			google: null
-		})
-		this.navigate('AUTH')
 	}
 }
 

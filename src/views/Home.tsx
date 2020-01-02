@@ -9,7 +9,7 @@ export const Home = () => {
 	const page = store.state.page
 	const selection = store.state.selection || []
 
-	let url:string = 'https://docs.google.com/spreadsheets/d/1cd5oFjezVIUaTwm1wvj5i5IjvbPiVXufvTFKF17T8Po/edit#gid=515282103'
+	let url:string = store.state.page.url
 	const handleUpdate = () => store.generate(url)
 
 	const Field = ({ field }) => {
@@ -62,12 +62,20 @@ export const Home = () => {
 
 	const SelectionDetail = () => (
 		<>
-			{selection.map(node => (
-				<section key={node.parameter}>
+			{selection.map(field => (
+				<section key={field.parameter}>
 					<dl>
-						<dt>{node.parameter}</dt>
-						{node.values.map(value => {
-							return <dd key={value.text}>{value.text}</dd>
+						<dt>{field.parameter}</dt>
+						{field.values.map(value => {
+							return <dd key={value.text}>
+								{value.text === field.value ? value.text : <a href="#" onClick={async () => {
+									field.value = value.text
+									emit('update-param', field)
+									await store.setState({ page: { ...store.state.page } })
+								}}>
+									{value.text}
+								</a>}
+							</dd>
 						})}
 					</dl>
 				</section>
@@ -83,7 +91,7 @@ export const Home = () => {
 					{page.url ? 'Update' : 'Create'}
 				</button>
 				<button onClick={store.fetchComponents}>
-					Fetch
+					Import Assets
 				</button>
 			</nav>
 		</Main>

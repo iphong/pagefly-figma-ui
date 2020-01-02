@@ -43,20 +43,22 @@ async function cache({ components }) {
 	components.forEach(component => {
 		componentsMap.set(slugify(component.name), component.key)
 	})
-	console.log('component cached - total:', components.length)
+	console.log('component cached - total:', componentsMap.size)
 }
 async function importComponents(names:string[]) {
 	let failed = 0
 	let loaded = 0
+	const nodes = {}
 	const map = [...componentsMap.entries()]
-	console.log('start importing components')
 	await Promise.all(names.map(async n => {
 		const loadName = slugify(n)
 		await Promise.all(map.map(async ([name, key]) => {
 			if (!loadedComponents.has(name) && name.startsWith(loadName)) {
 				const node = await figma.importComponentByKeyAsync(key)
 				if (node) {
+					console.log('imported -->', name)
 					loadedComponents.set(name, node)
+					nodes[name] = node
 					loaded++
 				} else {
 					failed++
@@ -64,7 +66,7 @@ async function importComponents(names:string[]) {
 			}
 		}))
 	}))
-	console.log('done importing components', loaded, failed)
+	return { loaded, failed, nodes }
 }
 
 const allFields = new Map
@@ -97,8 +99,11 @@ function gatherComponentInfo() {
 		const storedData = node && node.getPluginData('PF-DATA')
 		if (storedData) {
 			let data:FieldData
-			try { data = JSON.parse(storedData) }
-			catch (e) { console.log('failed to parse json data', data) }
+			try {
+				data = JSON.parse(storedData)
+			} catch (e) {
+				console.log('failed to parse json data', data)
+			}
 
 			allFields.set(node, data)
 			if (data.values.length > 1) {
@@ -118,25 +123,27 @@ function gatherComponentInfo() {
 	})
 }
 
-function updateParam(newData) {
+async function updateParam(newData) {
 	allFields.forEach((data, node) => {
 		if (newData.element === data.element && newData.group === data.group && newData.parameter === data.parameter) {
 			setFieldValue(newData.value, node)
 		}
 	})
+	emit('page', readPage())
 }
-function setFieldValue(value, node = figma.currentPage.selection[0]) {
+async function setFieldValue(value, node = figma.currentPage.selection[0]) {
 	const data = allFields.get(node)
 	data.value = value
-	updateControl(node, data)
+	await updateControl(node, data)
 	node.setPluginData('PF-DATA', JSON.stringify(data))
 	updateVisibility()
 }
 
-function updateControl(node, data) {
+async function updateControl(node, data) {
 	let control:InstanceNode = node.children[node.children.length - 1]
 	switch (data.component.toLowerCase()) {
 		case 'switch': {
+			await importComponents(['Switch/' + data.value])
 			control.masterComponent = findComponent('Switch/' + data.value)
 			setText(control, data.parameter)
 			break
@@ -424,17 +431,50 @@ function drawLabel(content:string):InstanceNode {
 	return currentLabel = label
 }
 
+
+let placeholder:ComponentNode
+function drawPlaceholder() {
+	if (!placeholder) {
+		const node = figma.createComponent()
+
+		node.resize(240, 10)
+		node.layoutMode = 'VERTICAL'
+		node.counterAxisSizingMode = 'FIXED'
+		node.horizontalPadding = 16
+		node.verticalPadding = 8
+		node.opacity = 0.3
+		node.visible = false
+		node.fills = [{
+			'type': 'SOLID',
+			'visible': true,
+			'opacity': 1,
+			'blendMode': 'NORMAL',
+			'color': { 'r': 0.9624999761581421, 'g': 0.4531770944595337, 'b': 0.4531770944595337 }
+		}]
+
+		const text = figma.createText()
+		node.appendChild(text)
+		text.layoutAlign = 'CENTER'
+		text.textAlignHorizontal = 'CENTER'
+		text.textAlignVertical = 'CENTER'
+		text.fills = [{
+			'type': 'SOLID',
+			'visible': true,
+			'opacity': 1,
+			'blendMode': 'NORMAL',
+			'color': { 'r': 0.27916666865348816, 'g': 0.08258680999279022, 'b': 0.08258680999279022 }
+		}]
+		placeholder = node
+	}
+	return placeholder.createInstance()
+}
 function drawControl(data:FieldData):InstanceNode {
 	let component = slugify(data.component)
 	let control:InstanceNode|SliceNode = createInstance(component)
 	if (!control) {
-		control = createInstance('Static text/Danger')
-		const text = setText(control, component)
-		control.layoutAlign = 'CENTER'
-		control.resize(240, 30)
-		control.opacity = 0.2
-		text.textAlignHorizontal = 'CENTER'
-		text.textAlignVertical = 'CENTER'
+		control = drawPlaceholder()
+		control.visible = true
+		setText(control, component)
 	}
 	if (component === 'switch') {
 		currentLabel.remove()

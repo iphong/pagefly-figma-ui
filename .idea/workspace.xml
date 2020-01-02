@@ -5,10 +5,7 @@
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/core.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/core.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/lib/api.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/api.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/lib/events.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/events.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/lib/store.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/store.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/types/global.d.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/types/global.d.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/views/Auth.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/views/Auth.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/views/Home.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/views/Home.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -121,7 +118,7 @@
       <workItem from="1577821591118" duration="5000" />
       <workItem from="1577950103163" duration="4460000" />
       <workItem from="1577960464939" duration="9824000" />
-      <workItem from="1577983719268" duration="8560000" />
+      <workItem from="1577983719268" duration="13006000" />
     </task>
     <task id="LOCAL-00001" summary="change">
       <created>1577752433052</created>
@@ -144,7 +141,14 @@
       <option name="project" value="LOCAL" />
       <updated>1577774570529</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="change">
+      <created>1577993451577</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1577993451577</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -189,11 +193,11 @@
       <screen x="0" y="0" width="1920" height="1200" />
     </state>
     <state x="506" y="173" key="#com.intellij.refactoring.rename.AutomaticRenamingDialog/0.0.1920.1200@0.0.1920.1200" timestamp="1577748263034" />
-    <state x="554" y="291" key="CommitChangelistDialog2" timestamp="1577774570199">
-      <screen x="0" y="0" width="1920" height="1157" />
+    <state x="554" y="302" key="CommitChangelistDialog2" timestamp="1577993451428">
+      <screen x="0" y="0" width="1920" height="1200" />
     </state>
     <state x="554" y="291" key="CommitChangelistDialog2/0.0.1920.1157@0.0.1920.1157" timestamp="1577774570199" />
-    <state x="554" y="302" key="CommitChangelistDialog2/0.0.1920.1200@0.0.1920.1200" timestamp="1577762409416" />
+    <state x="554" y="302" key="CommitChangelistDialog2/0.0.1920.1200@0.0.1920.1200" timestamp="1577993451428" />
     <state width="1899" height="379" key="GridCell.Tab.0.bottom" timestamp="1577974449873">
       <screen x="0" y="0" width="1920" height="1200" />
     </state>
@@ -279,6 +283,10 @@
     </state>
     <state x="469" y="230" key="SettingsEditor/0.0.1920.1157@0.0.1920.1157" timestamp="1577768268667" />
     <state x="469" y="239" key="SettingsEditor/0.0.1920.1200@0.0.1920.1200" timestamp="1577701917951" />
+    <state x="560" y="340" key="Vcs.Push.Dialog.v2" timestamp="1577993457658">
+      <screen x="0" y="0" width="1920" height="1200" />
+    </state>
+    <state x="560" y="340" key="Vcs.Push.Dialog.v2/0.0.1920.1200@0.0.1920.1200" timestamp="1577993457658" />
     <state x="552" y="314" width="816" height="571" key="find.popup" timestamp="1577953911662">
       <screen x="0" y="0" width="1920" height="1200" />
     </state>
