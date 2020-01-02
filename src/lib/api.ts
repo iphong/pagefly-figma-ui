@@ -1,44 +1,82 @@
-export class API<Params extends object> {
-	protected _baseURL:string
+import { store } from './store'
+
+export class API<Params extends object|any> {
+	protected _url:string
 	protected _token:string
 	protected _expired:number
+	protected _provider:string
+	protected _authCallback
 
 	set auth(payload:OAuth2Status) {
 		this._token = payload.access_token
 		this._expired = Date.now() + payload.expires_in
+		console.log('set oauth status for "' + this._provider + '"')
 	}
 
-	async get(path:string, params?:Params) {
-		const headers = { Authorization: `Bearer ${this._token}` }
+	onAuth = (cb) => {
+		this._authCallback = cb
+	}
+
+	login = async () => {
+		const provider = this._provider
+		const identifier = Math.round(Math.random() * 5000).toString().padStart(5, '0') + ':' + Date.now()
+		window.open('https://phongvt.herokuapp.com/auth/' + provider + '?state=' + identifier)
+		const req = await fetch('https://phongvt.herokuapp.com/auth/' + provider + '/gateway?state=' + identifier)
+		let res:OAuth2Status = await req.json()
+		if (typeof res !== 'object') {
+			try {
+				res = JSON.parse(res)
+			} catch (e) {
+				console.log('fail to parse oauth status')
+			}
+			if (res.access_token) {
+				this.auth = res
+				this._authCallback && this._authCallback(res)
+			}
+		}
+	}
+
+	query = async (path:string, params?:Params) => {
+		if (!this._token) {
+			console.log('asking for permission')
+			await this.login()
+		}
 		const query = params ? Object.entries(params).map(([k, v]) => `${k}=${v}`).join('&') : ''
-		const url = `${this._baseURL}/${path}?${query}`
-		const request = await fetch(url, { headers })
+		const request = await fetch(`${this._url}/${path}?${query}`, { headers: { Authorization: `Bearer ${this._token}` } })
 		return await request.json()
 	}
 }
 
-export class FigmaAPI extends API<object> {
-	protected _baseURL:string = `https://api.figma.com/v1`
+export class FigmaAPI extends API<any> {
+	_url = `https://api.figma.com/v1`
+	_provider = 'figma'
 
-	teamProjects = async id => await this.get(`teams/${id}/projects`)
-	projectFiles = async id => await this.get(`projects/${id}/files`)
-	fileComponents = async id => await this.get(`files/${id}/components`)
-	fileStyles = async id => await this.get(`files/${id}/styles`)
+	teamProjects = async id => this.query(`teams/${id}/projects`)
+	projectFiles = async id => this.query(`projects/${id}/files`)
+	fileComponents = async id => this.query(`files/${id}/components`)
+	fileStyles = async id => this.query(`files/${id}/styles`)
 
-	component = async id => await this.get(`components/${id}`)
-	style = async id => await this.get(`styles/${id}`)
-	file = async id => await this.get(`files/${id}`)
+	component = async id => this.query(`components/${id}`)
+	style = async id => this.query(`styles/${id}`)
+	file = async id => this.query(`files/${id}`)
 }
 
-export interface GoogleAPIParams {
+export class GoogleAPI extends API<{
 	ranges?:string
 	includeGridData?:boolean
-}
+}> {
+	_url = `https://sheets.googleapis.com/v4`
+	_provider = 'google'
 
-export class GoogleAPI extends API<GoogleAPIParams> {
-	protected _baseURL:string = `https://sheets.googleapis.com/v4`
+	parse(url) {
+		const regex = new RegExp('/spreadsheets/d/([a-zA-Z0-9-_]+)')
+		const gidRegex = new RegExp('[#&]gid=([0-9]+)')
+		const [, id] = url.match(regex) || []
+		const [, gid] = url.match(gidRegex) || []
+		return { id, gid }
+	}
 
-	sheet = (id:string, params:object) => this.get(`spreadsheets/${id}`)
+	sheet = async (id:string, params:object) => this.query(`spreadsheets/${id}`, params)
 }
 
 export const figma = new FigmaAPI

@@ -3,11 +3,13 @@ import styled from 'styled-components'
 import { store } from '../lib/store'
 import { emit } from '../lib/events'
 
+
 export const Home = () => {
+
 	const page = store.state.page
 	const selection = store.state.selection || []
 
-	let url:string = ''
+	let url:string = 'https://docs.google.com/spreadsheets/d/1cd5oFjezVIUaTwm1wvj5i5IjvbPiVXufvTFKF17T8Po/edit#gid=515282103'
 	const handleUpdate = () => store.generate(url)
 
 	const Field = ({ field }) => {
@@ -35,10 +37,10 @@ export const Home = () => {
 	const PageVariations = () => (
 		<table>
 			<tbody>
-			{/*{page.items.map(field => (*/}
-			{/*	field.values.some(i => (i.color !== '#000000')) && field.values.length > 1 &&*/}
-			{/*	<Field key={'f/' + field.element + '/' + field.parameter} field={field}/>*/}
-			{/*))}*/}
+			{page.items.map(field => (
+				field.values.some(i => (i.color !== '#000000')) && field.values.length > 1 &&
+				<Field key={'f/' + field.element + '/' + field.parameter} field={field}/>
+			))}
 			</tbody>
 		</table>
 	)
@@ -80,8 +82,8 @@ export const Home = () => {
 				<button onClick={handleUpdate}>
 					{page.url ? 'Update' : 'Create'}
 				</button>
-				<button onClick={store.logout}>
-					Logout
+				<button onClick={store.fetchComponents}>
+					Fetch
 				</button>
 			</nav>
 		</Main>

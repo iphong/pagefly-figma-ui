@@ -14,6 +14,7 @@ declare global {
 	type View = 'HOME'|'AUTH'|'ASSETS'
 
 	interface AppData {
+		VERSION:number,
 		view:View
 		page?:PageData
 		selection?:FieldData[]
@@ -23,24 +24,27 @@ declare global {
 
 		team?:string
 		files?:string[]
+		components?:{name:string, key:string}[]
 	}
 
 	interface PageData {
 		id:string
 		url:string
 		name:string
+		items?:FieldData[]
 	}
 
 	interface FieldData {
-		element:string
-		group:string
-		category:string
-		parameter:string
-		component:string
-		values:ValueData[]
-		value:string
-		tooltip:string
-		placeholder:string
+		element?:string
+		group?:string
+		category?:string
+		parameter?:string
+		component?:string
+		values?:ValueData[]
+		params?:ValueData[]
+		value?:string
+		tooltip?:string
+		placeholder?:string
 	}
 
 	interface ValueData {

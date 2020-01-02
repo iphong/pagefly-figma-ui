@@ -63,7 +63,7 @@ export const Auth = () => {
 				<input value={teamID} onChange={e => (teamID = e.target.value)}/>
 			</section>
 			<nav>
-				<button onClick={() => store.setState({ team: teamID, view: 'ASSETS' })}>Next
+				<button onClick={() => store.setState({ team: teamID, view: 'HOME' })}>Next
 				</button>
 			</nav>
 		</main>

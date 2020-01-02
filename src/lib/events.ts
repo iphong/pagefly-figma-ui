@@ -14,7 +14,7 @@ export function emit(event, payload?, callback?) {
 	if (isPlugin) {
 		figma.ui.postMessage({ id, event, payload })
 	} else {
-		top.postMessage({ pluginMessage: { id, event, payload } }, '*')
+		parent.postMessage({ pluginMessage: { id, event, payload } }, '*')
 	}
 }
 export function listen(event, callback) {
@@ -28,10 +28,13 @@ async function messageHandler(e) {
 	} else {
 		const callback = callbacks.get(event)
 		if (callback) {
+			let result
 			if (isPlugin) {
-				figma.ui.postMessage({ id, payload: await callback(payload) })
+				result = await callback(payload)
+				figma.ui.postMessage({ id, payload: result || {} })
 			} else {
-				top.postMessage({ pluginMessage: { id, payload: await callback(payload) } }, '*')
+				result = await callback(payload)
+				parent.postMessage({ pluginMessage: { id, payload: result || {} } }, '*')
 			}
 		}
 	}

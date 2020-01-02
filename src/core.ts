@@ -1,11 +1,10 @@
 import { emit, listen } from './lib/events'
-import groupBy from 'lodash/groupBy'
-import { UI_COMPONENT_NAMES } from './lib/defines'
+
 
 listen('load', load)
 listen('save', save)
 listen('draw', draw)
-listen('cache', cache)
+listen('components', cache)
 listen('set-param', setFieldValue)
 listen('update-param', updateParam)
 
@@ -22,12 +21,11 @@ figma.loadFontAsync({ family: 'Roboto', style: 'Black' })
 
 figma.showUI(__html__, { visible: true, width: 300, height: 300 })
 
-const component_names = UI_COMPONENT_NAMES.map(slugify)
 const storageKey = 'PF-APP3'
 
 type group_t = Map<string, Map<string, Set<FieldData>>>|Map<string, Set<FieldData>>
 
-const FIELDS:{ [key:string]: string } = {
+const FIELDS:{[key:string]:string} = {
 	group: 'group',
 	values: 'value(s)',
 	element: 'element',
@@ -37,52 +35,80 @@ const FIELDS:{ [key:string]: string } = {
 	component: 'ui component',
 	placeholder: 'placeholder'
 }
+const requiredComponentNames = ['section parameter group', 'heading body']
+const componentsMap:Map<string, string> = new Map
+const loadedComponents:Map<string, ComponentNode> = new Map
 
-let count
-const componentsMap = new Map
-function cache({ components }:{components:{[key:string]:any}}) {
-	count = 0
-	Object.entries(components).forEach(([id, component]) => {
-		component.name = slugify(component.name)
-		const { name, key } = component
-		if (!componentsMap.has(name)) {
-			const match = component_names.find((baseName:string) => name.startsWith(baseName))
-			if (match) {
-				count++
-				figma.importComponentByKeyAsync(key).then(node => {
-					componentsMap.set(name, {
-						id,
-						key,
-						name,
-						node
-					})
-				})
-			}
-		}
+async function cache({ components }) {
+	components.forEach(component => {
+		componentsMap.set(slugify(component.name), component.key)
 	})
-
+	console.log('component cached - total:', components.length)
+}
+async function importComponents(names:string[]) {
+	let failed = 0
+	let loaded = 0
+	const map = [...componentsMap.entries()]
+	console.log('start importing components')
+	await Promise.all(names.map(async n => {
+		const loadName = slugify(n)
+		await Promise.all(map.map(async ([name, key]) => {
+			if (!loadedComponents.has(name) && name.startsWith(loadName)) {
+				const node = await figma.importComponentByKeyAsync(key)
+				if (node) {
+					loadedComponents.set(name, node)
+					loaded++
+				} else {
+					failed++
+				}
+			}
+		}))
+	}))
+	console.log('done importing components', loaded, failed)
 }
 
 const allFields = new Map
 const variableFields = new Map
 const conditionalFields = new Map
 
+async function load() {
+	console.log('loading stored data')
+	gatherComponentInfo()
+	updateVisibility()
+	const data = await figma.clientStorage.getAsync(storageKey) || {}
+	data.page = readPage(figma.currentPage)
+	data.selection = getSelection()
+	console.log('sending stored data from plugin')
+	return data
+}
+
+async function save(data) {
+	delete data.page
+	delete data.selection
+	console.log('Data saved', data)
+	return await figma.clientStorage.setAsync(storageKey, data)
+}
+
 function gatherComponentInfo() {
 	allFields.clear()
 	variableFields.clear()
 	conditionalFields.clear()
 	figma.currentPage.findAll((node) => {
-		if (node && node.getPluginData('PF-TYPE') === 'FIELD') {
-			const data = JSON.parse(node.getPluginData('PF-DATA'))
+		const storedData = node && node.getPluginData('PF-DATA')
+		if (storedData) {
+			let data:FieldData
+			try { data = JSON.parse(storedData) }
+			catch (e) { console.log('failed to parse json data', data) }
+
 			allFields.set(node, data)
-			if (data.valueColors.length > 1) {
-				data.valueColors.forEach(item => {
+			if (data.values.length > 1) {
+				data.values.forEach(item => {
 					if (item.text === data.value) {
 						variableFields.set(node, data)
 					}
 				})
 			}
-			data.paramColors.forEach(item => {
+			data.params.forEach(item => {
 				if (item.color !== '#000000') {
 					conditionalFields.set(node, data)
 				}
@@ -115,7 +141,7 @@ function updateControl(node, data) {
 			setText(control, data.parameter)
 			break
 		}
-		case 'basic select':{
+		case 'basic select': {
 			setText(control, data.value)
 			break
 		}
@@ -129,7 +155,7 @@ function updateVisibility() {
 		if (!elements[k]) {
 			elements[k] = new Map
 		}
-		data.valueColors.forEach(item => {
+		data.values.forEach(item => {
 			if (item.text === data.value) {
 				elements[k].set(item.color, node)
 			}
@@ -137,7 +163,7 @@ function updateVisibility() {
 	})
 	conditionalFields.forEach((data, node) => {
 		const colors = elements[data.element + ':' + data.group]
-		const visible = data.paramColors.some(item => {
+		const visible = data.params.some(item => {
 			if (colors.has(item.color)) {
 				const relatedNode = colors.get(item.color)
 				return relatedNode.getPluginData('PF-VISIBLE') !== 'OFF'
@@ -158,23 +184,24 @@ function findComponent(name:string):ComponentNode {
 
 	let target:ComponentNode
 	const similar = []
-	componentsMap.forEach((data) => {
-		if (data.name.startsWith(name)) {
-			similar.push(data.name)
-			if (!target) target = data.node
+	loadedComponents.forEach((node, searchName) => {
+		if (searchName.startsWith(name)) {
+			similar.push(searchName)
+			if (!target) target = node
 		}
 	})
 	if (similar.length > 1) {
 		const defaultIndex = similar.indexOf(`${name}-default`)
-		const offIndex = similar.indexOf(`${name}-dff`)
+		const offIndex = similar.indexOf(`${name}-off`)
 		if (defaultIndex >= 0) {
-			target = componentsMap.get(similar[defaultIndex]).node
+			target = loadedComponents.get(similar[defaultIndex])
 		} else if (offIndex >= 0) {
-			target = componentsMap.get(similar[offIndex]).node
+			target = loadedComponents.get(similar[offIndex])
 		}
 	} else if (!similar.length) {
 
 	}
+	if (!target) console.log('No Component Found', name)
 	return target ? target : null
 }
 
@@ -190,36 +217,36 @@ let currentField
 let currentGroup
 let currentLabel
 
-async function load() {
-	gatherComponentInfo()
-	updateVisibility()
-	const data = await figma.clientStorage.getAsync(storageKey) || {}
-	data.page = readPage(figma.currentPage)
-	data.selection = getSelection()
-	return data
-}
-
-async function save(data) {
-	delete data.page
-	delete data.selection
-	return await figma.clientStorage.setAsync(storageKey, data)
-}
-
 function readPage(page = figma.currentPage) {
-	let id = page.getPluginData('PF-ID')
+	let dataString = page.getPluginData('PF-DATA')
 	let data = {
 		items: [...allFields.values()]
 	}
-	if (id) {
-		Object.assign(data, JSON.parse(page.getPluginData('PF-DATA')))
+	if (dataString) {
+		try {
+			Object.assign(data, JSON.parse(dataString))
+		} catch (e) {
+			console.log('failed to parse page json data', dataString)
+		}
 	}
 	return data
 }
 
 function getSelection(nodes = figma.currentPage.selection) {
 	return nodes
-		.filter(node => node.getPluginData('PF-TYPE') === 'FIELD')
-		.map(node => JSON.parse(node.getPluginData('PF-DATA')))
+		.map(node => {
+			const json = node.getPluginData('PF-DATA')
+			if (json) {
+				try {
+					const data = JSON.parse(json)
+					return data
+				} catch (e) {
+					console.log('failed to parse node json data', json)
+					return null
+				}
+			}
+		})
+		.filter(data => !!data)
 }
 
 function group(items:object[], key:string, sub?:string):group_t {
@@ -236,42 +263,63 @@ function group(items:object[], key:string, sub?:string):group_t {
 	return output
 }
 
-function merge(keys:string[], values:string[][], grid) {
+function merge(keys:string[], values:any[][]) {
 	const items:FieldData[] = []
+	const foundComponents = new Map
 
-	// values.forEach((data:any[], rowIndex) => {
-	// 	const item:FieldData = {}
-	//
-	// 	Object.entries(FIELDS).forEach(([key, value]) => {
-	// 		const index = keys.indexOf(value)
-	// 		if (key === 'values') {
-	// 			item.valueColors = getColorLines(grid.sheets[0].data[0].rowData[rowIndex].values[index])
-	// 		}
-	// 		if (key === 'parameter') {
-	// 			item.paramColors = getColorLines(grid.sheets[0].data[0].rowData[rowIndex].values[index])
-	// 		}
-	// 		item[key] = data[index] || ''
-	// 	})
-	// 	// item.parameter = item.parameter.split(CRLF)[0]
-	//
-	// 	if (item.element && item.group && item.component) items.push(item)
-	// })
+	values.forEach((data:any[], rowIndex) => {
+		const item:FieldData = {}
+		Object.entries(FIELDS).forEach(([key, val]) => {
+			const index = keys.indexOf(val)
+			if (index > -1) {
+				const obj = data[index]
+				if (obj) {
+					const value = obj.formattedValue || ''
+					if (key === 'values') {
+						item.values = getColorLines(data[index])
+						const defaultValue = item.values.find(i => i.bold)
+						item.value = defaultValue ? defaultValue.text : ''
+					} else if (key === 'parameter') {
+						item.params = getColorLines(data[index])
+						item.parameter = value.split(CRLF)[0]
+					} else item[key] = value
+				}
+			}
+		})
+		if (item.element && item.group && item.component) {
+			items.push(item)
+			foundComponents.set(item.component, true)
+		}
+	})
 
-	return group(items, 'element', 'group') as group_t
+	return {
+		components: [...foundComponents.keys()],
+		items: group(items, 'element', 'group')
+	}
 }
 
-function draw(payload) {
-	const { data, grid } = payload
-	const keys = data.slice(0, 1)[0].map((c?:string) => c ? c.toLowerCase() : '')
-	const values = data.slice(1)
-	const items = merge(keys, values, grid)
+async function draw({ id, title, url, data }) {
 
-	drawPage(payload)
+	console.log('Draw sheet data')
+	const keys = data.slice(0, 1)[0].map(item => (item.formattedValue || '').toLowerCase())
+	const values = data.slice(1)
+	const { components, items } = merge(keys, values)
+	console.log('Done merge items')
+
+	await importComponents(requiredComponentNames)
+	await importComponents(components)
+
+	drawPage({ id, title, url })
+	console.log('Done draw page')
+
 	items.forEach((groups, element) => {
+		console.log('draw frame:', element)
 		drawFrame(element)
 		groups.forEach((fields:Set<FieldData>, group:string) => {
+			console.log('draw group:', group)
 			drawGroup(group)
 			fields.forEach((field) => {
+				console.log('draw field:', field.parameter, '-->', field.component)
 				drawField(field)
 			})
 		})
@@ -298,9 +346,10 @@ function drawPage(payload):PageNode {
 	}
 	page.name = payload.title
 	currentFrame = null
-	const { id, title, url, sheet, sheets, time } = payload
+	const { id, title, url } = payload
+	console.log('Set plugin data')
 	page.setPluginData('PF-ID', payload.id)
-	page.setPluginData('PF-DATA', JSON.stringify({ id, title, url, sheet, sheets, time }))
+	page.setPluginData('PF-DATA', JSON.stringify({ id, title, url }))
 	return figma.currentPage = page
 }
 
@@ -354,7 +403,6 @@ function drawField(data:FieldData):BaseNode {
 	field.verticalPadding = 8
 	field.itemSpacing = 4
 
-	field.setPluginData('PF-TYPE', 'FIELD')
 	field.setPluginData('PF-DATA', JSON.stringify(data))
 
 	if (data.parameter) {
