@@ -1,5 +1,8 @@
 import { emit, listen } from './lib/events'
-
+function debug(...args) {
+	console.log('PLUGIN CORE :::', ...args)
+	// emit('debug', { args })
+}
 
 listen('load', load)
 listen('save', save)
@@ -29,6 +32,7 @@ const FIELDS:{[key:string]:string} = {
 	group: 'group',
 	values: 'value(s)',
 	element: 'element',
+	subElement: 'sub-element',
 	tooltip: 'tooltip',
 	category: 'category',
 	parameter: 'parameter',
@@ -41,9 +45,10 @@ const loadedComponents:Map<string, ComponentNode> = new Map
 
 async function cache({ components }) {
 	components.forEach(component => {
+		// debug('-->', component.name)
 		componentsMap.set(slugify(component.name), component.key)
 	})
-	console.log('component cached - total:', componentsMap.size)
+	debug('component cached - total:', componentsMap.size)
 }
 async function importComponents(names:string[]) {
 	let failed = 0
@@ -56,7 +61,7 @@ async function importComponents(names:string[]) {
 			if (!loadedComponents.has(name) && name.startsWith(loadName)) {
 				const node = await figma.importComponentByKeyAsync(key)
 				if (node) {
-					console.log('imported -->', name)
+					debug('imported -->', name)
 					loadedComponents.set(name, node)
 					nodes[name] = node
 					loaded++
@@ -74,20 +79,20 @@ const variableFields = new Map
 const conditionalFields = new Map
 
 async function load() {
-	console.log('loading stored data')
+	debug('loading stored data')
 	gatherComponentInfo()
 	updateVisibility()
 	const data = await figma.clientStorage.getAsync(storageKey) || {}
 	data.page = readPage(figma.currentPage)
 	data.selection = getSelection()
-	console.log('sending stored data from plugin')
+	debug('sending stored data from plugin')
 	return data
 }
 
 async function save(data) {
 	delete data.page
 	delete data.selection
-	console.log('Data saved', data)
+	debug('Data saved', data)
 	return await figma.clientStorage.setAsync(storageKey, data)
 }
 
@@ -102,7 +107,7 @@ function gatherComponentInfo() {
 			try {
 				data = JSON.parse(storedData)
 			} catch (e) {
-				console.log('failed to parse json data', data)
+				debug('failed to parse json data', data)
 			}
 
 			allFields.set(node, data)
@@ -208,7 +213,7 @@ function findComponent(name:string):ComponentNode {
 	} else if (!similar.length) {
 
 	}
-	if (!target) console.log('No Component Found', name)
+	if (!target) debug('No Component Found', name)
 	return target ? target : null
 }
 
@@ -233,7 +238,7 @@ function readPage(page = figma.currentPage) {
 		try {
 			Object.assign(data, JSON.parse(dataString))
 		} catch (e) {
-			console.log('failed to parse page json data', dataString)
+			debug('failed to parse page json data', dataString)
 		}
 	}
 	return data
@@ -245,10 +250,9 @@ function getSelection(nodes = figma.currentPage.selection) {
 			const json = node.getPluginData('PF-DATA')
 			if (json) {
 				try {
-					const data = JSON.parse(json)
-					return data
+					return JSON.parse(json)
 				} catch (e) {
-					console.log('failed to parse node json data', json)
+					debug('failed to parse node json data', json)
 					return null
 				}
 			}
@@ -274,7 +278,7 @@ function merge(keys:string[], values:any[][]) {
 	const items:FieldData[] = []
 	const foundComponents = new Map
 
-	values.forEach((data:any[], rowIndex) => {
+	values.forEach((data:any[]) => {
 		const item:FieldData = {}
 		Object.entries(FIELDS).forEach(([key, val]) => {
 			const index = keys.indexOf(val)
@@ -293,11 +297,16 @@ function merge(keys:string[], values:any[][]) {
 				}
 			}
 		})
+		if (item.subElement) {
+			debug(item.subElement)
+			item.element = item.subElement
+		}
 		if (item.element && item.group && item.component) {
 			items.push(item)
 			foundComponents.set(item.component, true)
 		}
 	})
+
 
 	return {
 		components: [...foundComponents.keys()],
@@ -307,29 +316,39 @@ function merge(keys:string[], values:any[][]) {
 
 async function draw({ id, title, url, data }) {
 
-	console.log('Draw sheet data')
+	debug('Draw sheet data')
 	const keys = data.slice(0, 1)[0].map(item => (item.formattedValue || '').toLowerCase())
 	const values = data.slice(1)
 	const { components, items } = merge(keys, values)
-	console.log('Done merge items')
+	debug('Done merge items')
 
 	await importComponents(requiredComponentNames)
 	await importComponents(components)
 
 	drawPage({ id, title, url })
-	console.log('Done draw page')
+	debug('Done draw page')
 
 	items.forEach((groups, element) => {
-		console.log('draw frame:', element)
+		debug('draw frame:', element)
 		drawFrame(element)
 		groups.forEach((fields:Set<FieldData>, group:string) => {
-			console.log('draw group:', group)
+			debug('draw group:', group)
 			drawGroup(group)
 			fields.forEach((field) => {
-				console.log('draw field:', field.parameter, '-->', field.component)
+				debug('draw field:', field.parameter, '-->', field.component)
 				drawField(field)
 			})
 		})
+	})
+	figma.currentPage.findAll(node => {
+		if (node.getPluginData('PF-DATA')) {
+			try {
+				updateControl(node, JSON.parse(node.getPluginData('PF-DATA')))
+			} catch (e) {
+				console.log('failed to update control value')
+			}
+		}
+		return false
 	})
 	figma.viewport.scrollAndZoomIntoView(figma.currentPage.children)
 
@@ -354,7 +373,7 @@ function drawPage(payload):PageNode {
 	page.name = payload.title
 	currentFrame = null
 	const { id, title, url } = payload
-	console.log('Set plugin data')
+	debug('Set plugin data')
 	page.setPluginData('PF-ID', payload.id)
 	page.setPluginData('PF-DATA', JSON.stringify({ id, title, url }))
 	return figma.currentPage = page
@@ -420,8 +439,6 @@ function drawField(data:FieldData):BaseNode {
 	const control = drawControl(data)
 	field.appendChild(control)
 
-	updateControl(field, data)
-
 	return currentField = field
 }
 
@@ -432,49 +449,45 @@ function drawLabel(content:string):InstanceNode {
 }
 
 
-let placeholder:ComponentNode
-function drawPlaceholder() {
-	if (!placeholder) {
-		const node = figma.createComponent()
+function drawPlaceholder(content:string) {
+	const node = figma.createFrame()
 
-		node.resize(240, 10)
-		node.layoutMode = 'VERTICAL'
-		node.counterAxisSizingMode = 'FIXED'
-		node.horizontalPadding = 16
-		node.verticalPadding = 8
-		node.opacity = 0.3
-		node.visible = false
-		node.fills = [{
-			'type': 'SOLID',
-			'visible': true,
-			'opacity': 1,
-			'blendMode': 'NORMAL',
-			'color': { 'r': 0.9624999761581421, 'g': 0.4531770944595337, 'b': 0.4531770944595337 }
-		}]
+	node.resize(240, 10)
+	node.layoutMode = 'VERTICAL'
+	node.counterAxisSizingMode = 'FIXED'
+	node.horizontalPadding = 16
+	node.verticalPadding = 8
+	node.opacity = 0.3
+	node.locked = true
+	node.fills = [{
+		'type': 'SOLID',
+		'visible': true,
+		'opacity': 1,
+		'blendMode': 'NORMAL',
+		'color': { 'r': 0.9624999761581421, 'g': 0.4531770944595337, 'b': 0.4531770944595337 }
+	}]
 
-		const text = figma.createText()
-		node.appendChild(text)
-		text.layoutAlign = 'CENTER'
-		text.textAlignHorizontal = 'CENTER'
-		text.textAlignVertical = 'CENTER'
-		text.fills = [{
-			'type': 'SOLID',
-			'visible': true,
-			'opacity': 1,
-			'blendMode': 'NORMAL',
-			'color': { 'r': 0.27916666865348816, 'g': 0.08258680999279022, 'b': 0.08258680999279022 }
-		}]
-		placeholder = node
-	}
-	return placeholder.createInstance()
+	const text = figma.createText()
+	node.appendChild(text)
+	text.characters = content
+	text.layoutAlign = 'CENTER'
+	text.textAlignHorizontal = 'CENTER'
+	text.textAlignVertical = 'CENTER'
+	text.fills = [{
+		'type': 'SOLID',
+		'visible': true,
+		'opacity': 1,
+		'blendMode': 'NORMAL',
+		'color': { 'r': 0.27916666865348816, 'g': 0.08258680999279022, 'b': 0.08258680999279022 }
+	}]
+	return node
 }
-function drawControl(data:FieldData):InstanceNode {
+function drawControl(data:FieldData):InstanceNode|FrameNode {
 	let component = slugify(data.component)
-	let control:InstanceNode|SliceNode = createInstance(component)
+	let control:InstanceNode|FrameNode = createInstance(component)
 	if (!control) {
-		control = drawPlaceholder()
-		control.visible = true
-		setText(control, component)
+		debug('using place holder instead')
+		control = drawPlaceholder(component)
 	}
 	if (component === 'switch') {
 		currentLabel.remove()
@@ -495,7 +508,7 @@ function getColorLines(val) {
 			return {
 				text: line.trim(),
 				color: protoToCssColor(val.effectiveFormat.textFormat.foregroundColor),
-				bold: !index ? true : false
+				bold: !index
 			}
 		})
 	}

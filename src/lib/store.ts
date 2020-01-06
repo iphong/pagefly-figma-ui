@@ -2,8 +2,9 @@ import { Container } from 'unstated'
 import { figma, google } from './api'
 import { emit, listen } from './events'
 import debounce from 'lodash/debounce'
+import { debug } from './debug'
 
-const VERSION = 11
+const VERSION = 12
 
 export class Store extends Container<AppData> {
 
@@ -24,18 +25,19 @@ export class Store extends Container<AppData> {
 	constructor() {
 		super()
 		figma.onAuth(async auth => {
-			console.log('figma authorized')
+			debug('figma authorized')
 			await this.setState({ figma: auth })
 		})
 		google.onAuth( async auth => {
-			console.log('google authorized')
+			debug('google authorized')
 			await this.setState({ google: auth })
 		})
 		listen('view', this.navigate)
 		listen('page', this.setPage)
 		listen('selection', this.setSelection)
+		listen('debug', ({ args }) => debug(...args))
 		emit('load', this.onLoad)
-		console.log('app init')
+		debug('app init')
 
 	}
 
@@ -56,14 +58,14 @@ export class Store extends Container<AppData> {
 
 	onLoad = async (state:AppData) => {
 		if (state.VERSION !== this.state.VERSION) {
-			console.log('Different DATA version')
+			debug('Different DATA version')
 			const { google, figma, team, page, selection } = state
 			await this.setState({ page, selection, google, figma, team })
 		} else {
 			await this.setState(state)
 		}
 		this.subscribe(this.onUpdate)
-		console.log('app state', this.state)
+		debug('app state', this.state)
 		if (this.state.figma) {
 			figma.auth = this.state.figma
 		}
@@ -85,7 +87,7 @@ export class Store extends Container<AppData> {
 			const res = await figma.fileComponents(this.state.files[i])
 			const components = res.meta.components.map(({ name, key } ) => ({ name, key }))
 			loaded = [...loaded, ...components]
-			console.log('loaded file', this.state.files[i])
+			debug('loaded file', this.state.files[i])
 		}
 		await this.setState({ components: loaded })
 		await this.loadComponents()
@@ -96,18 +98,18 @@ export class Store extends Container<AppData> {
 
 	generate = async (url) => {
 		const { id, gid } = google.parse(url)
-		console.log('draw from sheet url', id, gid, url)
+		debug('draw from sheet url', id, gid, url)
 		if (id) {
-			console.log('fetch sheet info')
+			debug('fetch sheet info')
 			const info = await google.sheet(id, {})
 			const sheet = info.sheets.find(item => {
 				return gid && item.properties.sheetId === parseInt(gid) || item.properties.title === 'Element Parameters'
 			})
 			if (!sheet) {
-				console.log('no sheet found', info)
+				debug('no sheet found', info)
 				return
 			}
-			console.log('fetch sheet data')
+			debug('fetch sheet data')
 			const data = await google.sheet(id, {
 				ranges: sheet.properties.title,
 				includeGridData: true
@@ -116,7 +118,7 @@ export class Store extends Container<AppData> {
 			const values = rows.map(row => {
 				return row.values
 			})
-			console.log('sending plugin event')
+			debug('sending plugin event')
 			emit('draw', {
 				id,
 				url,

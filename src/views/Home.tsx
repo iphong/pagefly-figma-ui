@@ -88,7 +88,7 @@ export const Home = () => {
 			{!selection.length ? <PageDetail/> : <SelectionDetail/>}
 			<nav>
 				<button onClick={handleUpdate}>
-					{page.url ? 'Update' : 'Create'}
+					{page.url ? 'Redraw UI' : 'Create UI'}
 				</button>
 				<button onClick={store.fetchComponents}>
 					Import Assets

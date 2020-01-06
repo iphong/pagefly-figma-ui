@@ -36,6 +36,7 @@ declare global {
 
 	interface FieldData {
 		element?:string
+		subElement?:string
 		group?:string
 		category?:string
 		parameter?:string

@@ -1,3 +1,5 @@
+import { debug } from './debug'
+
 export class API<Params extends object|any> {
 	protected _url:string
 	protected _token:string
@@ -8,7 +10,7 @@ export class API<Params extends object|any> {
 	set auth(payload:OAuth2Status) {
 		this._token = payload.access_token
 		this._expired = Date.now() + payload.expires_in
-		console.log('set oauth status for "' + this._provider + '"')
+		debug('set oauth status for "' + this._provider + '"')
 	}
 
 	onAuth = (cb) => {
@@ -25,7 +27,7 @@ export class API<Params extends object|any> {
 			try {
 				res = JSON.parse(res)
 			} catch (e) {
-				console.log('fail to parse oauth status')
+				debug('fail to parse oauth status')
 			}
 			if (res.access_token) {
 				this.auth = res
@@ -36,7 +38,7 @@ export class API<Params extends object|any> {
 
 	query = async (path:string, params?:Params) => {
 		if (!this._token) {
-			console.log('asking for permission')
+			debug('asking for permission')
 			await this.login()
 		}
 		const query = params ? Object.entries(params).map(([k, v]) => `${k}=${v}`).join('&') : ''
@@ -44,11 +46,11 @@ export class API<Params extends object|any> {
 		const res = await request.json()
 		if (res.error) {
 			if (res.error.code === 401) {
-				console.log('API unauthorized')
+				debug('API unauthorized')
 				await this.login()
 				await this.query(path, params)
 			} else {
-				console.log('API ERROR', res.error)
+				debug('API ERROR', res.error)
 				throw res.error
 			}
 		}
