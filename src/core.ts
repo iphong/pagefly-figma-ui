@@ -44,13 +44,14 @@ const componentsMap:Map<string, string> = new Map
 const loadedComponents:Map<string, ComponentNode> = new Map
 
 async function cache({ components }) {
+	componentsMap.clear()
 	components.forEach(component => {
 		const key = slugify(component.name)
 		if (!componentsMap.has(key)) {
-			// debug('-->', component.name)
+			debug('-->', component.name, component.key)
 			componentsMap.set(key, component.key)
 		} else {
-			// debug('--> component exists', component.name, component.key, componentsMap.get(key))
+			debug('--> component exists', component.name, component.key, componentsMap.get(key))
 		}
 	})
 	debug('component cached - total:', componentsMap.size)

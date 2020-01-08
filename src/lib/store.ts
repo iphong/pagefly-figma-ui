@@ -4,7 +4,7 @@ import { emit, listen } from './events'
 import debounce from 'lodash/debounce'
 import { debug } from './debug'
 
-const VERSION = 12
+const VERSION = 13
 
 export class Store extends Container<AppData> {
 
@@ -17,8 +17,8 @@ export class Store extends Container<AppData> {
 		page: { url: null, id: null, name: null, items: [] },
 		files: [
 			'3uYkKPR3FJBC5w9DCj6AqZ', // Universal
-			'6NJFtH7zbodiX5TVKJaI7s', // Pagefly
-			'R6ER7QFSbl0X2dy5KCCDJa' // CTA
+			// '6NJFtH7zbodiX5TVKJaI7s', // Pagefly
+			// 'R6ER7QFSbl0X2dy5KCCDJa' // CTA
 		]
 	}
 
