@@ -424,8 +424,8 @@ function drawField(data:FieldData):BaseNode {
 	frame.appendChild(field)
 
 	field.name = data.parameter || 'Field'
-	field.backgrounds = []
-	field.backgroundStyleId = 'S:9bf6cc077471c0c2bd5a9d680d0124cba7c06006,7:124'
+	// field.backgrounds = []
+	// field.backgroundStyleId = 'S:9bf6cc077471c0c2bd5a9d680d0124cba7c06006,7:124'
 
 	field.resize(frame.width, 30)
 
